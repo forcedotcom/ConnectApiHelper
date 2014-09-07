@@ -1,3 +1,14 @@
+/**
+ *
+ * Unit tests for ConnectApiHelper.
+ *
+ * This class works with API version 32.0 and later. There is a separate class
+ * that works with v31.0 and earlier.
+ *
+ * See https://github.com/alouie-sfdc/ConnectApiHelper for more information.
+ *
+ */
+
 @IsTest(SeeAllData=true)
 public class ConnectApiHelperTest {
 
@@ -129,7 +140,7 @@ public class ConnectApiHelperTest {
         String text3 = ' test.';
         String text = '#' + hashtag + text1 + link + text2 + '{' + mentionId + '}' + text3;
         
-        ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithMentions(null, 'me', text);
+        ConnectApi.FeedElement fi = ConnectApiHelper.postFeedItemWithMentions(null, 'me', text);
         
         List<ConnectApi.MessageSegment> segments = fi.body.messageSegments;
 
@@ -162,7 +173,7 @@ public class ConnectApiHelperTest {
 
     @IsTest(SeeAllData=true)
     static void testMentionInComment() {
-        ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedItem(null, ConnectApi.FeedType.News, 'me', 'hi');
+        ConnectApi.FeedElement fi = ConnectApi.ChatterFeeds.postFeedElement(null, 'me', ConnectApi.FeedElementType.FeedItem, 'hi');
         String mentionId = UserInfo.getUserId();
         String text = '{' + mentionId + '}';
         ConnectApi.Comment comment = ConnectApiHelper.postCommentWithMentions(null, fi.id, text);
