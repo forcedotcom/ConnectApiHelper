@@ -1,6 +1,8 @@
 /**
  *
  * Helper class that makes it easier to post Chatter @-mentions with Apex code.
+ * This class works with API version 32.0 and later. There is a separate class
+ * that works with v31.0 and earlier.
  *
  * See https://github.com/alouie-sfdc/ConnectApiHelper for more information.
  *
@@ -21,7 +23,7 @@ global class ConnectApiHelper {
      *                         automatically parsed if provided.
      * @return The posted feed item.
      */
-    public static ConnectApi.FeedItem postFeedItemWithMentions(String communityId, String subjectId, String textWithMentions) {
+    public static ConnectApi.FeedElement postFeedItemWithMentions(String communityId, String subjectId, String textWithMentions) {
 
         if (textWithMentions == null || textWithMentions.trim().length() == 0) {
             throw new InvalidParameterException('The textWithMentions parameter must be non-empty.');
@@ -32,8 +34,9 @@ global class ConnectApiHelper {
 
         ConnectApi.FeedItemInput input = new ConnectApi.FeedItemInput();
         input.body = messageInput;
+        input.subjectId = subjectId;
         
-        return ConnectApi.ChatterFeeds.postFeedItem(communityId, ConnectApi.FeedType.Record, subjectId, input, null);
+        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input, null);
     }
 
     /**
@@ -59,7 +62,7 @@ global class ConnectApiHelper {
         ConnectApi.CommentInput input = new ConnectApi.CommentInput();
         input.body = messageInput;
         
-        return ConnectApi.ChatterFeeds.postComment(communityId, feedItemId, input, null);
+        return ConnectApi.ChatterFeeds.postCommentToFeedElement(communityId, feedItemId, input, null);
     }
 
     public static List<ConnectApi.MessageSegmentInput> getMessageSegmentInputs(String inputText) {
