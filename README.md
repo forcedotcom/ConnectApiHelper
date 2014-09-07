@@ -31,3 +31,5 @@ Installation
 ------------
 
 Just copy the `ConnectApiHelper` class to your Salesforce org. The methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. You can also refer to the `ConnectApiHelperTest` class for more examples.
+
+If you need to use API version 31.0 or earlier, be sure to use the ConnectApiHelper class that's contained in the `v31AndEarlier` directory.
