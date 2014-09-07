@@ -1,6 +1,7 @@
 /**
  *
  * Helper class that makes it easier to post Chatter @-mentions with Apex code.
+ *
  * This class works with API version 32.0 and later. There is a separate class
  * that works with v31.0 and earlier.
  *
