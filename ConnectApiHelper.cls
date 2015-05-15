@@ -1,6 +1,13 @@
 /**
  *
- * Helper class that makes it easier to post Chatter @-mentions with Apex code.
+ * Helper class that makes it easier to do common operations with the classes in the ConnectApi namespace.
+ *
+ * Includes convenience methods to:
+ *
+ *     - Post Chatter @-mentions with Apex code.
+ *     - Take a feed item or comment body and return an input body that matches it.
+ *       This is useful for when you retrieve a feed item or comment and want to either
+ *       re-post or edit it.
  *
  * This class works with API version 32.0 and later. There is a separate class
  * that works with v31.0 and earlier.
@@ -116,4 +123,69 @@ global class ConnectApiHelper {
         return mentionSegment;
     }
     
+    /**
+     * Takes an output feed body and returns a message body input that matches it.
+     * This is useful for when you retrieve a feed item or comment and want to either re-post or edit it.
+     */
+    public static ConnectApi.MessageBodyInput createInputFromBody(ConnectApi.FeedBody body) {
+        ConnectApi.MessageBodyInput input = new ConnectApi.MessageBodyInput();
+        input.messageSegments = new List<ConnectApi.MessageSegmentInput>();
+        
+        for (ConnectApi.MessageSegment segment : body.messageSegments) {
+            if (segment instanceof ConnectApi.TextSegment) {
+                ConnectApi.TextSegment textOutput = (ConnectApi.TextSegment) segment;
+                ConnectApi.TextSegmentInput textInput = new ConnectApi.TextSegmentInput();
+                textInput.text = textOutput.text;
+                input.messageSegments.add(textInput);
+            }
+            else if (segment instanceof ConnectApi.MentionSegment) {
+                ConnectApi.MentionSegment mentionOutput = (ConnectApi.MentionSegment) segment;
+                ConnectApi.MentionSegmentInput mentionInput = new ConnectApi.MentionSegmentInput();
+                mentionInput.id = mentionOutput.record.id;
+                input.messageSegments.add(mentionInput);
+            }
+            else if (segment instanceof ConnectApi.HashtagSegment) {
+                ConnectApi.HashtagSegment hashtagOutput = (ConnectApi.HashtagSegment) segment;
+                ConnectApi.HashtagSegmentInput hashtagInput = new ConnectApi.HashtagSegmentInput();
+                hashtagInput.tag = hashtagOutput.tag;
+                input.messageSegments.add(hashtagInput);
+            }
+            else if (segment instanceof ConnectApi.LinkSegment) {
+                ConnectApi.LinkSegment linkOutput = (ConnectApi.LinkSegment) segment;
+                ConnectApi.LinkSegmentInput linkInput = new ConnectApi.LinkSegmentInput();
+                linkInput.url = linkOutput.url;
+                input.messageSegments.add(linkInput);
+            }
+            else {
+                // The other segment types are system-generated and have no corresponding input types.
+            }
+            
+        }
+        return input;
+    }
+    
+    /**
+     * Takes an output body and returns a feed item input body that matches it.
+     * This is useful for when you retrieve a feed item and want to either re-post or edit it.
+     */
+    public static ConnectApi.FeedItemInput createFeedItemInputFromBody(ConnectApi.FeedBody body) {
+        ConnectApi.MessageBodyInput bodyInput = createInputFromBody(body);
+        
+        ConnectApi.FeedItemInput input = new ConnectApi.FeedItemInput();
+        input.body = bodyInput;
+        return input;
+    }
+    
+    /**
+     * Takes an output body and returns a comment input body that matches it.
+     * This is useful for when you retrieve a comment and want to either re-post or edit it.
+     */
+    public static ConnectApi.CommentInput createCommentInputFromBody(ConnectApi.FeedBody body) {
+        ConnectApi.MessageBodyInput bodyInput = createInputFromBody(body);
+        
+        ConnectApi.CommentInput input = new ConnectApi.CommentInput();
+        input.body = bodyInput;
+        return input;
+    }
+        
 }
