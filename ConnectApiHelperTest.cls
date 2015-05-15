@@ -185,4 +185,83 @@ public class ConnectApiHelperTest {
         System.assertEquals(mentionId, mentionSegment.record.id);
     }
 
+    @IsTest(SeeAllData=true)
+    static void testCreateInputFromBody() {
+    
+        // We'll post a feed item that contains text, link, hashtag, and mention segments, and then call the helper method on the
+        // resulting body.
+
+        ConnectApi.FeedItemInput feedItemInput = new ConnectApi.FeedItemInput();
+
+        ConnectApi.MessageBodyInput messageBodyInput = new ConnectApi.MessageBodyInput();
+        messageBodyInput.messageSegments = new List<ConnectApi.MessageSegmentInput>();
+
+        // We can put the link and hashtag parts into a text segment to post the feed item. When it gets retrieved, it will have
+        // separate segments for the text, link and hashtag.
+        String expectedText = 'Text ';
+        String expectedLink = 'http://link.com';
+        String expectedHashtag = 'hashtag';
+
+        ConnectApi.TextSegmentInput textSegmentInput = new ConnectApi.TextSegmentInput();
+        textSegmentInput.text = expectedText + expectedLink + ' #' + expectedHashtag;
+        messageBodyInput.messageSegments.add(textSegmentInput);
+
+        ConnectApi.MentionSegmentInput mentionSegmentInput = new ConnectApi.MentionSegmentInput();
+        mentionSegmentInput.id = UserInfo.getUserId();
+        messageBodyInput.messageSegments.add(mentionSegmentInput);
+
+        feedItemInput.body = messageBodyInput;
+        feedItemInput.feedElementType = ConnectApi.FeedElementType.FeedItem;
+        feedItemInput.subjectId = UserInfo.getUserId();
+
+        ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput, null);
+        
+        ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(feedElement.body);
+        System.assertEquals(5, input.messageSegments.size(), 'Wrong number of message segments.');
+
+        System.assert(input.messageSegments.get(0) instanceof ConnectApi.TextSegmentInput, 'Segment 0 is not a text segment input.');
+        ConnectApi.TextSegmentInput textInput = (ConnectApi.TextSegmentInput) input.messageSegments.get(0);
+        System.assertEquals(expectedText, textInput.text, 'Segment 0 text does not match.');
+
+        System.assert(input.messageSegments.get(1) instanceof ConnectApi.LinkSegmentInput, 'Segment 1 is not a link segment input.');
+        ConnectApi.LinkSegmentInput linkInput = (ConnectApi.LinkSegmentInput) input.messageSegments.get(1);
+        System.assertEquals(expectedLink, linkInput.url, 'Segment 1 url does not match.');
+
+        System.assert(input.messageSegments.get(2) instanceof ConnectApi.TextSegmentInput, 'Segment 2 is not a text segment input.');
+        ConnectApi.TextSegmentInput textInput2 = (ConnectApi.TextSegmentInput) input.messageSegments.get(2);
+        System.assertEquals(' ', textInput2.text, 'Segment 2 text does not match.');
+
+        System.assert(input.messageSegments.get(3) instanceof ConnectApi.HashtagSegmentInput, 'Segment 3 is not a hashtag segment input.');
+        ConnectApi.HashtagSegmentInput hashtagInput = (ConnectApi.HashtagSegmentInput) input.messageSegments.get(3);
+        System.assertEquals(expectedHashtag, hashtagInput.tag, 'Segment 3 hashtag does not match.');
+
+        System.assert(input.messageSegments.get(4) instanceof ConnectApi.MentionSegmentInput, 'Segment 4 is not a mention segment input.');
+        ConnectApi.MentionSegmentInput mentionInput = (ConnectApi.MentionSegmentInput) input.messageSegments.get(4);
+        System.assertEquals(UserInfo.getUserId(), mentionInput.id, 'Segment 4 mention ID does not match.');
+
+        // Get coverage for the createFeedItemInputFromBody() method.
+        ConnectApi.FeedItemInput feedItemInput2 = ConnectApiHelper.createFeedItemInputFromBody(feedElement.body);
+        System.assertEquals(input, feedItemInput2.body, 'createFeedItemInputFromBody is returning a different input body than createInputFromBody.');
+        
+        // Get coverage for the createCommentInputFromBody() method.
+        ConnectApi.CommentInput commentInput = ConnectApiHelper.createCommentInputFromBody(feedElement.body);
+        System.assertEquals(input, commentInput.body, 'createCommentInputFromBody is returning a different input body than createInputFromBody.');
+    }
+
+    @IsTest(SeeAllData=true)
+    static void testCreateInputFromBodyWithGeneratedSegment() {
+        ConnectApi.FeedBody body = new ConnectApi.FeedBody();
+        body.messageSegments = new List<ConnectApi.MessageSegment>();
+
+        // Mock up an entity link segment.        
+        ConnectApi.EntityLinkSegment entityLinkSegment = new ConnectApi.EntityLinkSegment();
+        entityLinkSegment.text = 'blah';
+        
+        body.messageSegments.add(entityLinkSegment);
+        body.text = 'blah';
+        
+        ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(body);
+        System.assertEquals(0, input.messageSegments.size(), 'Wrong number of message segments.');
+    }
+
 }
