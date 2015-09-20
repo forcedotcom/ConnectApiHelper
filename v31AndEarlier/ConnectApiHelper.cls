@@ -1,8 +1,10 @@
 /*
 Copyright (c) 2014, salesforce.com, Inc.
 All rights reserved.
+
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
+
     * Redistributions of source code must retain the above copyright notice,
       this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice,
@@ -28,8 +30,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Helper class that makes it easier to post Chatter @-mentions with Apex code.
  *
- * This class works with API version 31.0 and earlier. There is a separate class
- * that works with v32.0 and later.
+ * This class works with API version 31.0 and earlier. There are separate classes
+ * that work with a) v32.0 to v34.0, and b) v35.0 and higher. 
  *
  * See https://github.com/alouie-sfdc/ConnectApiHelper for more information.
  *
