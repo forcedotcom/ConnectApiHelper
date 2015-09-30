@@ -4,6 +4,7 @@ ConnectApiHelper
 `ConnectApiHelper` is an Apex class that makes it easier to do common operations with the classes in the ConnectApi namespace. It includes convenience methods to:
 
 * Post Chatter @-mentions with Apex code.
+* Post rich text and inline images with Apex code.
 * Take a feed item or comment body and return an input body that matches it (useful for either editing or re-posting).
 
 Easier @-mentions
@@ -35,10 +36,53 @@ If you want to mention someone in a post that says: *Hey there @Jane Doe, how ar
 
     ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input, null);
 
+Streamlined rich text and inline images
+---------------------------------------
+If you want to add rich text or inline images in your post, one line will do it:
+
+    ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithRichText(Network.getNetworkId(),
+    'me', 'Have you seen this <b>gorgeous</b> view? {img:069x00000000D7m:View of the Space Needle from our office.}');
+
+... instead of this:
+
+    ConnectApi.MessageBodyInput messageInput = new ConnectApi.MessageBodyInput();
+    messageInput.messageSegments = new List<ConnectApi.MessageSegmentInput>();
+
+    ConnectApi.TextSegmentInput textSegment = new ConnectApi.TextSegmentInput();
+    textSegment.text = 'Have you seen this ';
+    messageInput.messageSegments.add(textSegment);
+
+    ConnectApi.MarkupBeginSegmentInput markupBeginSegment = new ConnectApi.MarkupBeginSegmentInput();
+    markupBeginSegment.markupType = ConnectApi.MarkupType.Bold; 
+    messageInput.messageSegments.add(markupBeginSegment);
+
+    textSegment = new ConnectApi.TextSegmentInput();
+    textSegment.text = 'gorgeous';
+    messageInput.messageSegments.add(textSegment);
+
+    ConnectApi.MarkupEndSegmentInput markupEndSegment = new ConnectApi.MarkupEndSegmentInput();
+    markupEndSegment.markupType = ConnectApi.MarkupType.Bold; 
+    messageInput.messageSegments.add(markupEndSegment);
+
+    textSegment = new ConnectApi.TextSegmentInput();
+    textSegment.text = ' view? ';
+    messageInput.messageSegments.add(textSegment);
+
+    ConnectApi.InlineImageSegmentInput inlineImageSegment = new ConnectApi.InlineImageSegmentInput();
+    inlineImageSegment.fileId = '069x00000000D7m';
+    inlineImageSegment.altText = 'View of the Space Needle from our office.';
+    messageInput.messageSegments.add(inlineImageSegment);
+
+    ConnectApi.FeedItemInput input = new ConnectApi.FeedItemInput();
+    input.body = messageInput;
+    input.subjectId = 'me';
+
+    ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input, null);
+
 Installation
 ------------
 
-Just copy the `ConnectApiHelper` and `ConnectApiHelperTest` classes to your Salesforce org. For @-mentions, the methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. You can also refer to the `ConnectApiHelperTest` class for more examples.
+Just copy the `ConnectApiHelper` and `ConnectApiHelperTest` classes to your Salesforce org. For @-mentions, the methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. To include rich text and inline images as well (starting in version 35.0), the method to use is `ConnectApiHelper.postFeedItemWithRichText`.  You can also refer to the `ConnectApiHelperTest` class for more examples.
 
 For creating input bodies from output bodies, the methods are `ConnectApiHelper.createFeedItemInputFromBody` and `ConnectApiHelper.createCommentInputFromBody`.
 
