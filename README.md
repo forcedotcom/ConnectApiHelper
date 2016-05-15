@@ -34,7 +34,7 @@ If you want to mention someone in a post that says: *Hey there @Jane Doe, how ar
     input.body = messageInput;
     input.subjectId = 'me';
 
-    ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input, null);
+    ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input);
 
 Streamlined rich text and inline images
 ---------------------------------------
@@ -77,7 +77,7 @@ If you want to add rich text or inline images in your post, one line will do it:
     input.body = messageInput;
     input.subjectId = 'me';
 
-    ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input, null);
+    ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input);
 
 Installation
 ------------
