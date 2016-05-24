@@ -106,7 +106,7 @@ global class ConnectApiHelper {
         input.body = messageInput;
         input.subjectId = subjectId;
         
-        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input, null);
+        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input);
     }
 
     /**

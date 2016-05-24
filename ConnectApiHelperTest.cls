@@ -254,7 +254,7 @@ public class ConnectApiHelperTest {
         feedItemInput.feedElementType = ConnectApi.FeedElementType.FeedItem;
         feedItemInput.subjectId = UserInfo.getUserId();
 
-        ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput, null);
+        ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);
         
         ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(feedElement.body);
         System.assertEquals(8, input.messageSegments.size(), 'Wrong number of message segments.');
