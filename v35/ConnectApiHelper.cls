@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2016, salesforce.com, Inc.
+Copyright (c) 2015, salesforce.com, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -36,8 +36,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  *       This is useful for when you retrieve a feed item or comment and want to either
  *       re-post or edit it.
  *
- * This class works with API version 36.0 and later. There are separate classes
- * that work with v35.0 and earlier.
+ * This class works with API version 35.0. There are separate classes
+ * that work with earlier and later versions. 
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -106,7 +106,7 @@ global class ConnectApiHelper {
         input.body = messageInput;
         input.subjectId = subjectId;
         
-        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input);
+        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input, null);
     }
 
     /**

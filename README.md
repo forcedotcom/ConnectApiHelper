@@ -53,7 +53,7 @@ If you want to add rich text or inline images in your post, one line will do it:
     messageInput.messageSegments.add(textSegment);
 
     ConnectApi.MarkupBeginSegmentInput markupBeginSegment = new ConnectApi.MarkupBeginSegmentInput();
-    markupBeginSegment.markupType = ConnectApi.MarkupType.Bold; 
+    markupBeginSegment.markupType = ConnectApi.MarkupType.Bold;
     messageInput.messageSegments.add(markupBeginSegment);
 
     textSegment = new ConnectApi.TextSegmentInput();
@@ -61,7 +61,7 @@ If you want to add rich text or inline images in your post, one line will do it:
     messageInput.messageSegments.add(textSegment);
 
     ConnectApi.MarkupEndSegmentInput markupEndSegment = new ConnectApi.MarkupEndSegmentInput();
-    markupEndSegment.markupType = ConnectApi.MarkupType.Bold; 
+    markupEndSegment.markupType = ConnectApi.MarkupType.Bold;
     messageInput.messageSegments.add(markupEndSegment);
 
     textSegment = new ConnectApi.TextSegmentInput();
@@ -89,3 +89,5 @@ For creating input bodies from output bodies, the methods are `ConnectApiHelper.
 If you need to use API version 31.0 or earlier, be sure to use the ConnectApiHelper class that's contained in the `v31AndEarlier` directory.
 
 If you need to use API versions 32.0, 33.0, or 34.0, use the one that's in the `v32-v34` directory. These API versions do not support rich text segments.
+
+If you need to use API version 35.0, use the one that's in the `v35` directory.
