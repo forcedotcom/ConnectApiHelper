@@ -33,7 +33,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  * This class works with API version 31.0 and earlier. There are separate classes
  * that work with a) v32.0 to v34.0, and b) v35.0 and higher. 
  *
- * See https://github.com/alouie-sfdc/ConnectApiHelper for more information.
+ * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
  */
 

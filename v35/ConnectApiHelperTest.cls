@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2016, salesforce.com, Inc.
+Copyright (c) 2015, salesforce.com, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -29,8 +29,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Unit tests for ConnectApiHelper.
  *
- * This class works with API version 36.0 and later. There are separate classes
- * that work with v35.0 and earlier.
+ * This class works with API version 35.0. There are separate classes
+ * that work with earlier and later versions. 
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -254,7 +254,7 @@ public class ConnectApiHelperTest {
         feedItemInput.feedElementType = ConnectApi.FeedElementType.FeedItem;
         feedItemInput.subjectId = UserInfo.getUserId();
 
-        ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);
+        ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput, null);
         
         ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(feedElement.body);
         System.assertEquals(8, input.messageSegments.size(), 'Wrong number of message segments.');
