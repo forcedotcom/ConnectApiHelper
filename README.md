@@ -11,7 +11,7 @@ Easier @-mentions
 -----------------
 If you want to mention someone in a post that says: *Hey there @Jane Doe, how are you?*, you can do it in one line like this:
 
-    ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithMentions(Network.getNetworkId(), 'me', 'Hey there {005D00000015tjz}, how are you?');
+    ConnectApi.FeedElement fi = ConnectApiHelper.postFeedItemWithMentions(Network.getNetworkId(), 'me', 'Hey there {005D00000015tjz}, how are you?');
 
 ... instead of this:
 
