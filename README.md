@@ -14,7 +14,7 @@ ConnectApiHelper
 * Take a feed item or comment body and return an input body that matches it (useful for either editing or re-posting).
 * Post a batch of up to 500 feed elements for the cost of one DML statement.
 
-This repo also contains `PostToChatterAction` class which can be invoked from Process Builder and Flow to post a Chatter Post easily.
+This repo also contains `PostToChatterAction` class which can be invoked from Process Builder and Flow to post a Chatter Post easily without code.
 
 Easier @-mentions
 -----------------
