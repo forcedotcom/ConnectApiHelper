@@ -9,8 +9,12 @@ ConnectApiHelper
 `ConnectApiHelper` is an Apex class that makes it easier to do common operations with the classes in the [ConnectApi namespace](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_connect_api.htm). It includes convenience methods to:
 
 * Post Chatter @-mentions with Apex code.
+* Post links to Records with Apex code. 
 * Post rich text and inline images with Apex code.
 * Take a feed item or comment body and return an input body that matches it (useful for either editing or re-posting).
+* Post a batch of up to 500 feed elements for the cost of one DML statement.
+
+This repo also contains `PostToChatterAction` class which can be invoked from Process Builder and Flow to post a Chatter Post easily.
 
 Easier @-mentions
 -----------------
@@ -87,12 +91,18 @@ If you want to add rich text or inline images in your post, one line will do it:
 Installation
 ------------
 
-Just copy the `ConnectApiHelper` and `ConnectApiHelperTest` classes to your Salesforce org. For @-mentions, the methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. To include rich text and inline images as well (starting in version 35.0), the method to use is `ConnectApiHelper.postFeedItemWithRichText`.  You can also refer to the `ConnectApiHelperTest` class for more examples.
+For API version 43.0 and above you can use the **Deploy to Salesforce** button at the top, or you can manually copy the classes from the `src/classes` directory to your sandbox. This is the only version that allows mentioning (linking) records that are not of type User or Group. This is also the only version that contain the `PostToChatterAction` class for posting to chatter from Process Builder or Flow.
+
+For @-mentions, the methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. To include rich text and inline images as well (starting in version 35.0), the method to use is `ConnectApiHelper.postFeedItemWithRichText`.  You can also refer to the `ConnectApiHelperTest` class for more examples.
+
+To post a batch of up to 500 feed elements for the cost of one DML statement (starting in version 43.0) use the `ConnectApiHelper.createFeedItemWithMentions` to create the elements in memory, and then pass them to `ConnectApiHelper.postFeedItemBatch` method. You can see the example of this in `ConnectApiHelperTest.testBatchPosting` test method, and also in the `PostToChatterAction.postToChatter` invocable method.
 
 For creating input bodies from output bodies, the methods are `ConnectApiHelper.createFeedItemInputFromBody` and `ConnectApiHelper.createCommentInputFromBody`.
 
-If you need to use API version 31.0 or earlier, be sure to use the ConnectApiHelper class that's contained in the `v31AndEarlier` directory.
+If you need to use API version 31.0 or earlier, be sure to use the ConnectApiHelper class that's contained in the `OldApiVersions/v31AndEarlier` directory.
 
-If you need to use API versions 32.0, 33.0, or 34.0, use the one that's in the `v32-v34` directory. These API versions do not support rich text segments.
+If you need to use API versions 32.0, 33.0, or 34.0, use the one that's in the `OldApiVersions/v32-v34` directory. These API versions do not support rich text segments.
 
-If you need to use API version 35.0, use the one that's in the `v35` directory.
+If you need to use API version 35.0, use the one that's in the `OldApiVersions/v35` directory.
+
+If you need to use API versions 36.0 to 42.0, use the one that's in the `OldApiVersions/v36-v42` directory. These API versions do not support linking to all records and bulk posting.
