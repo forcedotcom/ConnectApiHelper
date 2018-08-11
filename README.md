@@ -1,6 +1,11 @@
 ConnectApiHelper
 ================
 
+<a href="https://githubsfdeploy.herokuapp.com?owner=smukov&repo=ConnectApiHelper&ref=master">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
+
 `ConnectApiHelper` is an Apex class that makes it easier to do common operations with the classes in the [ConnectApi namespace](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_connect_api.htm). It includes convenience methods to:
 
 * Post Chatter @-mentions with Apex code.
