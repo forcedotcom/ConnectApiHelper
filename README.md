@@ -1,7 +1,7 @@
 ConnectApiHelper
 ================
 
-<a href="https://githubsfdeploy.herokuapp.com?owner=smukov&repo=ConnectApiHelper&ref=master">
+<a href="https://githubsfdeploy.herokuapp.com">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
 </a>
