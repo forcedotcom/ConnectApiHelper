@@ -149,7 +149,9 @@ global class ConnectApiHelper {
         // The fourth group matches a 15 or 18 character content document ID preceded by "img:", 
         //    optionally followed by a string (not containing '}'), and surrounded by {}: 
         //    (\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})
-        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})');
+        // The fifth group matches a 12 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
+        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){12,18}(:[\\s\\S]*?)?\\})');
+
         Matcher globalMatcher = globalPattern.matcher(inputText);
         
         while (globalMatcher.find()) {
@@ -168,6 +170,13 @@ global class ConnectApiHelper {
                     String altText = imageInfo.size() == 3 ? imageInfo[2] : null;
                     ConnectApi.InlineImageSegmentInput inlineImageSegmentInput = makeInlineImageSegmentInput(imageInfo[1], altText);
                     messageSegmentInputs.add(inlineImageSegmentInput);
+                    strPos = globalMatcher.end();
+                }
+                else if (innerMatchedText.startsWith('record:')) {
+                    // Inline record
+                    String[] recordInfo = innerMatchedText.split(':', 6);
+                    ConnectApi.EntityLinkSegmentInput entityLinkSegmentInput = makeEntityLinkSegmentInput(recordInfo[1], null);
+                    messageSegmentInputs.add(entityLinkSegmentInput);
                     strPos = globalMatcher.end();
                 }
                 else {
@@ -234,7 +243,14 @@ global class ConnectApiHelper {
         mentionSegment.id = mentionId;
         return mentionSegment;
     }
+
+    private static ConnectApi.EntityLinkSegmentInput makeEntityLinkSegmentInput(String recordId,String altText) {
+        ConnectApi.EntityLinkSegmentInput entityLinkSegment = new ConnectApi.EntityLinkSegmentInput();
+        entityLinkSegment.entityId = recordId;
+        return entityLinkSegment;
+    }   
     
+
     /**
      * Create a MarkupBeginSegmentInput corresponding to the tag.  Checking whether the tag is 
      * supported markup should happen before calling this method.

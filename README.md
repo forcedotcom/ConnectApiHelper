@@ -36,12 +36,12 @@ If you want to mention someone in a post that says: *Hey there @Jane Doe, how ar
 
     ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input);
 
-Streamlined rich text and inline images
+Streamlined rich text , inline images and records
 ---------------------------------------
-If you want to add rich text or inline images in your post, one line will do it:
+If you want to add rich text ,inline images or record mentions in your post, one line will do it:
 
     ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithRichText(Network.getNetworkId(),
-    'me', 'Have you seen this <b>gorgeous</b> view? {img:069x00000000D7m:View of the Space Needle from our office.}');
+    'me', 'Have you seen this <b>gorgeous</b> view? {img:069x00000000D7m:View of the Space Needle from our office.} \nBy the way, please check {record:01t3E000002GCm9QAG}');
 
 ... instead of this:
 
@@ -72,6 +72,14 @@ If you want to add rich text or inline images in your post, one line will do it:
     inlineImageSegment.fileId = '069x00000000D7m';
     inlineImageSegment.altText = 'View of the Space Needle from our office.';
     messageInput.messageSegments.add(inlineImageSegment);
+
+    textSegment = new ConnectApi.TextSegmentInput();
+    textSegment.text = ' \nBy the way, please check ';
+    messageInput.messageSegments.add(textSegment);
+
+    ConnectApi.EntityLinkSegmentInput entityLinkSegment = new ConnectApi.EntityLinkSegmentInput();
+    entityLinkSegment.entityId = '01t3E000002GCm9QAG';
+    messageInput.messageSegments.add(entityLinkSegment);
 
     ConnectApi.FeedItemInput input = new ConnectApi.FeedItemInput();
     input.body = messageInput;
