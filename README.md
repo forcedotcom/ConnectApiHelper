@@ -4,7 +4,7 @@ ConnectApiHelper
 `ConnectApiHelper` is an Apex class that makes it easier to do common operations with the classes in the [ConnectApi namespace](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_connect_api.htm). It includes convenience methods to:
 
 * Post Chatter @-mentions with Apex code.
-* Post rich text , inline images and record mentions with Apex code.
+* Post rich text, inline images, and record links with Apex code.
 * Take a feed item or comment body and return an input body that matches it (useful for either editing or re-posting).
 
 Easier @-mentions
@@ -36,9 +36,9 @@ If you want to mention someone in a post that says: *Hey there @Jane Doe, how ar
 
     ConnectApi.FeedItem fi = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input);
 
-Streamlined rich text , inline images and records
----------------------------------------
-If you want to add rich text ,inline images or record mentions in your post, one line will do it:
+Streamlined rich text, inline images and record links
+-----------------------------------------------------
+If you want to add rich text, inline images, or record links in your post, one line will do it:
 
     ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithRichText(Network.getNetworkId(),
     'me', 'Have you seen this <b>gorgeous</b> view? {img:069x00000000D7m:View of the Space Needle from our office.} \nBy the way, please check {record:01t3E000002GCm9QAG}');
