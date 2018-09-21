@@ -500,6 +500,19 @@ public class ConnectApiHelperTest {
     }
 
     @IsTest(SeeAllData=true)
+    static void testRecordMention() {
+        String recordId = '01t3E000002GCm9QAG';
+        String text = '{record:' + recordId + '}';
+        List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
+
+        System.assertEquals(1, segments.size());
+        System.assert(segments.get(0) instanceof ConnectApi.EntityLinkSegmentInput);
+
+        ConnectApi.EntityLinkSegmentInput recordSegment = (ConnectApi.EntityLinkSegmentInput) segments.get(0);
+        System.assertEquals(recordId, recordSegment.entityId);
+    }
+
+    @IsTest(SeeAllData=true)
     static void testMarkupAndMention() {
         String mentionId = '005x0000000URNPzzz';
         String message = 'How are you';

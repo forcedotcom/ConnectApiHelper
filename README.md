@@ -4,7 +4,7 @@ ConnectApiHelper
 `ConnectApiHelper` is an Apex class that makes it easier to do common operations with the classes in the [ConnectApi namespace](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_connect_api.htm). It includes convenience methods to:
 
 * Post Chatter @-mentions with Apex code.
-* Post rich text and inline images with Apex code.
+* Post rich text , inline images and record mentions with Apex code.
 * Take a feed item or comment body and return an input body that matches it (useful for either editing or re-posting).
 
 Easier @-mentions

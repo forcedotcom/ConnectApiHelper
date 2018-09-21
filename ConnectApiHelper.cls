@@ -174,8 +174,8 @@ global class ConnectApiHelper {
                 }
                 else if (innerMatchedText.startsWith('record:')) {
                     // Inline record
-                    String[] recordInfo = innerMatchedText.split(':', 6);
-                    ConnectApi.EntityLinkSegmentInput entityLinkSegmentInput = makeEntityLinkSegmentInput(recordInfo[1], null);
+                    String[] recordInfo = innerMatchedText.split(':');
+                    ConnectApi.EntityLinkSegmentInput entityLinkSegmentInput = makeEntityLinkSegmentInput(recordInfo[1]);
                     messageSegmentInputs.add(entityLinkSegmentInput);
                     strPos = globalMatcher.end();
                 }
@@ -244,7 +244,7 @@ global class ConnectApiHelper {
         return mentionSegment;
     }
 
-    private static ConnectApi.EntityLinkSegmentInput makeEntityLinkSegmentInput(String recordId,String altText) {
+    private static ConnectApi.EntityLinkSegmentInput makeEntityLinkSegmentInput(String recordId) {
         ConnectApi.EntityLinkSegmentInput entityLinkSegment = new ConnectApi.EntityLinkSegmentInput();
         entityLinkSegment.entityId = recordId;
         return entityLinkSegment;
