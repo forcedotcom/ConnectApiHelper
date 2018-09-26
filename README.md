@@ -99,3 +99,5 @@ If you need to use API version 31.0 or earlier, be sure to use the ConnectApiHel
 If you need to use API versions 32.0, 33.0, or 34.0, use the one that's in the `v32-v34` directory. These API versions do not support rich text segments.
 
 If you need to use API version 35.0, use the one that's in the `v35` directory.
+
+If you need to use API versions 36.0 to 42.0 inclusive, use the one that's in the `v36-v42` directory. These API versions do not support record links.
