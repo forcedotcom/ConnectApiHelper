@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, salesforce.com, Inc.
+Copyright (c) 2018, salesforce.com, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -30,7 +30,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  * Unit tests for ConnectApiHelper.
  *
  * This class works with API version 35.0. There are separate classes
- * that work with earlier and later versions. 
+ * that work with earlier and later versions.
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -74,7 +74,7 @@ public class ConnectApiHelperTest {
     static void testNoMentions() {
         String text = 'hey there';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-        
+
         System.assertEquals(1, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.TextSegmentInput);
         ConnectApi.TextSegmentInput textSegment = (ConnectApi.TextSegmentInput) segments.get(0);
@@ -86,7 +86,7 @@ public class ConnectApiHelperTest {
         String mentionId = '005x0000000URNP';
         String text = '{' + mentionId + '}';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-        
+
         System.assertEquals(1, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.MentionSegmentInput);
         ConnectApi.MentionSegmentInput mentionSegment = (ConnectApi.MentionSegmentInput) segments.get(0);
@@ -142,7 +142,7 @@ public class ConnectApiHelperTest {
 
         ConnectApi.MentionSegmentInput mentionSegment = (ConnectApi.MentionSegmentInput) segments.get(0);
         System.assertEquals(mentionId, mentionSegment.id);
-        
+
         ConnectApi.MentionSegmentInput mentionSegment2 = (ConnectApi.MentionSegmentInput) segments.get(1);
         System.assertEquals(mentionId2, mentionSegment2.id);
     }
@@ -158,7 +158,7 @@ public class ConnectApiHelperTest {
         // 3 = text2
         // 4 = mention
         // 5 = text3
-        
+
         String hashtag = 'Yolo';
         String text1 = ': ';
         String link = 'http://salesforce.com';
@@ -166,9 +166,9 @@ public class ConnectApiHelperTest {
         String mentionId = UserInfo.getUserId();
         String text3 = ' test.';
         String text = '#' + hashtag + text1 + link + text2 + '{' + mentionId + '}' + text3;
-        
+
         ConnectApi.FeedElement fi = ConnectApiHelper.postFeedItemWithRichText(null, 'me', text);
-        
+
         List<ConnectApi.MessageSegment> segments = fi.body.messageSegments;
 
         System.assertEquals(6, segments.size());
@@ -193,7 +193,7 @@ public class ConnectApiHelperTest {
 
         ConnectApi.MentionSegment mentionSegment = (ConnectApi.MentionSegment) segments.get(4);
         System.assertEquals(mentionId, mentionSegment.record.id);
-        
+
         ConnectApi.TextSegment textSegment3 = (ConnectApi.TextSegment) segments.get(5);
         System.assertEquals(text3, textSegment3.text);
     }
@@ -214,8 +214,8 @@ public class ConnectApiHelperTest {
 
     @IsTest(SeeAllData=true)
     static void testCreateInputFromBody() {
-    
-        // We'll post a feed item that contains text, link, hashtag, mention, and markup segments, 
+
+        // We'll post a feed item that contains text, link, hashtag, mention, and markup segments,
         // and then call the helper method on the resulting body.
 
         ConnectApi.FeedItemInput feedItemInput = new ConnectApi.FeedItemInput();
@@ -237,11 +237,11 @@ public class ConnectApiHelperTest {
         ConnectApi.MentionSegmentInput mentionSegmentInput = new ConnectApi.MentionSegmentInput();
         mentionSegmentInput.id = UserInfo.getUserId();
         messageBodyInput.messageSegments.add(mentionSegmentInput);
-        
+
         ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = new ConnectApi.MarkupBeginSegmentInput();
         markupBeginSegmentInput.markupType = ConnectApi.MarkupType.Bold;
         messageBodyInput.messageSegments.add(markupBeginSegmentInput);
-        
+
         textSegmentInput = new ConnectApi.TextSegmentInput();
         textSegmentInput.text = expectedBoldText;
         messageBodyInput.messageSegments.add(textSegmentInput);
@@ -255,7 +255,7 @@ public class ConnectApiHelperTest {
         feedItemInput.subjectId = UserInfo.getUserId();
 
         ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput, null);
-        
+
         ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(feedElement.body);
         System.assertEquals(8, input.messageSegments.size(), 'Wrong number of message segments.');
 
@@ -294,7 +294,7 @@ public class ConnectApiHelperTest {
         // Get coverage for the createFeedItemInputFromBody() method.
         ConnectApi.FeedItemInput feedItemInput2 = ConnectApiHelper.createFeedItemInputFromBody(feedElement.body);
         System.assertEquals(input, feedItemInput2.body, 'createFeedItemInputFromBody is returning a different input body than createInputFromBody.');
-        
+
         // Get coverage for the createCommentInputFromBody() method.
         ConnectApi.CommentInput commentInput = ConnectApiHelper.createCommentInputFromBody(feedElement.body);
         System.assertEquals(input, commentInput.body, 'createCommentInputFromBody is returning a different input body than createInputFromBody.');
@@ -305,13 +305,13 @@ public class ConnectApiHelperTest {
         ConnectApi.FeedBody body = new ConnectApi.FeedBody();
         body.messageSegments = new List<ConnectApi.MessageSegment>();
 
-        // Mock up an entity link segment.        
+        // Mock up an entity link segment.
         ConnectApi.EntityLinkSegment entityLinkSegment = new ConnectApi.EntityLinkSegment();
         entityLinkSegment.text = 'blah';
-        
+
         body.messageSegments.add(entityLinkSegment);
         body.text = 'blah';
-        
+
         ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(body);
         System.assertEquals(0, input.messageSegments.size(), 'Wrong number of message segments.');
     }
@@ -427,7 +427,7 @@ public class ConnectApiHelperTest {
 
         markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(9);
         System.assertEquals(ConnectApi.MarkupType.ListItem, markupEndSegment.markupType);
-        
+
         markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(10);
         System.assertEquals(ConnectApi.MarkupType.OrderedList, markupEndSegment.markupType);
     }
@@ -551,7 +551,7 @@ public class ConnectApiHelperTest {
         String text5 = ' ';
         String imageId = '069B0000000q7hi';
         String altText = 'An image of something nice.';
-        String text = '<p><i>' + text1 + '</i></p><ul><li><s>' + text2 + '</s></li></ul><ol><li><u>' 
+        String text = '<p><i>' + text1 + '</i></p><ul><li><s>' + text2 + '</s></li></ul><ol><li><u>'
                         + text3 + '</u></li></ol><b>' + text4 + '</b> {img:' + imageId + ':' + altText + '}';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
 
@@ -562,8 +562,8 @@ public class ConnectApiHelperTest {
         System.assert(segments.get(2) instanceof ConnectApi.TextSegmentInput);
         System.assert(segments.get(3) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(4) instanceof ConnectApi.MarkupEndSegmentInput);
-        
-        // <ul><li><s>A completed item in an unordered list.</s></li></ul>        
+
+        // <ul><li><s>A completed item in an unordered list.</s></li></ul>
         System.assert(segments.get(5) instanceof ConnectApi.MarkupBeginSegmentInput);
         System.assert(segments.get(6) instanceof ConnectApi.MarkupBeginSegmentInput);
         System.assert(segments.get(7) instanceof ConnectApi.MarkupBeginSegmentInput);
@@ -571,7 +571,7 @@ public class ConnectApiHelperTest {
         System.assert(segments.get(9) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(10) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(11) instanceof ConnectApi.MarkupEndSegmentInput);
-        
+
         // <ol><li><u>An underlined item in an ordered list.</u></li></ol>
         System.assert(segments.get(12) instanceof ConnectApi.MarkupBeginSegmentInput);
         System.assert(segments.get(13) instanceof ConnectApi.MarkupBeginSegmentInput);
@@ -580,7 +580,7 @@ public class ConnectApiHelperTest {
         System.assert(segments.get(16) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(17) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(18) instanceof ConnectApi.MarkupEndSegmentInput);
-        
+
         // <b>And, of course, an image for you:</b> {img:069B0000000q7hi:An image of something nice.}
         System.assert(segments.get(19) instanceof ConnectApi.MarkupBeginSegmentInput);
         System.assert(segments.get(20) instanceof ConnectApi.TextSegmentInput);
@@ -604,7 +604,7 @@ public class ConnectApiHelperTest {
         markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(4);
         System.assertEquals(ConnectApi.MarkupType.Paragraph, markupEndSegment.markupType);
 
-        // <ul><li><s>A completed item in an unordered list.</s></li></ul>        
+        // <ul><li><s>A completed item in an unordered list.</s></li></ul>
         markupBeginSegment = (ConnectApi.MarkupBeginSegmentInput) segments.get(5);
         System.assertEquals(ConnectApi.MarkupType.UnorderedList, markupBeginSegment.markupType);
 
@@ -647,7 +647,7 @@ public class ConnectApiHelperTest {
 
         markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(18);
         System.assertEquals(ConnectApi.MarkupType.OrderedList, markupEndSegment.markupType);
-        
+
         // <b>And, of course, an image for you:</b> {img:069B0000000q7hi:An image of something nice.}
         markupBeginSegment = (ConnectApi.MarkupBeginSegmentInput) segments.get(19);
         System.assertEquals(ConnectApi.MarkupType.Bold, markupBeginSegment.markupType);

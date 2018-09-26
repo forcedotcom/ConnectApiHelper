@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, salesforce.com, Inc.
+Copyright (c) 2018, salesforce.com, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -31,7 +31,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  * Helper class that makes it easier to post Chatter @-mentions with Apex code.
  *
  * This class works with API version 31.0 and earlier. There are separate classes
- * that work with a) v32.0 to v34.0, and b) v35.0 and higher. 
+ * that work with a) v32.0 to v34.0, and b) v35.0 and higher.
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -43,7 +43,7 @@ global class ConnectApiHelper {
 
     /**
      * Posts a feed item with @-mentions using an @-mention formatting syntax.
-     * 
+     *
      * @param communityId Use either the ID of a community, 'internal', or null.
      * @param subjectId The parent of the post. Can be a user ID, a group ID, or a record ID.
      * @param textWithMentions The text of the post. You can @-mention a user or group by using
@@ -57,19 +57,19 @@ global class ConnectApiHelper {
         if (textWithMentions == null || textWithMentions.trim().length() == 0) {
             throw new InvalidParameterException('The textWithMentions parameter must be non-empty.');
         }
-        
+
         ConnectApi.MessageBodyInput messageInput = new ConnectApi.MessageBodyInput();
         messageInput.messageSegments = getMessageSegmentInputs(textWithMentions);
 
         ConnectApi.FeedItemInput input = new ConnectApi.FeedItemInput();
         input.body = messageInput;
-        
+
         return ConnectApi.ChatterFeeds.postFeedItem(communityId, ConnectApi.FeedType.Record, subjectId, input, null);
     }
 
     /**
      * Posts a comment with @-mentions using an @-mention formatting syntax.
-     * 
+     *
      * @param communityId Use either the ID of a community, 'internal', or null.
      * @param feedItemId The ID of the feed item being commented on.
      * @param textWithMentions The text of the comment. You can @-mention a user or group by using
@@ -83,13 +83,13 @@ global class ConnectApiHelper {
         if (textWithMentions == null || textWithMentions.trim().length() == 0) {
             throw new InvalidParameterException('The textWithMentions parameter must be non-empty.');
         }
-        
+
         ConnectApi.MessageBodyInput messageInput = new ConnectApi.MessageBodyInput();
         messageInput.messageSegments = getMessageSegmentInputs(textWithMentions);
 
         ConnectApi.CommentInput input = new ConnectApi.CommentInput();
         input.body = messageInput;
-        
+
         return ConnectApi.ChatterFeeds.postComment(communityId, feedItemId, input, null);
     }
 
@@ -102,19 +102,19 @@ global class ConnectApiHelper {
         Integer strPos = 0;
         Pattern myPattern = Pattern.compile('\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\}'); // Match a 15 or 18 character ID surrounded by {}.
         Matcher myMatcher = myPattern.matcher(inputText);
-        
+
         while (myMatcher.find()) {
               String textSegment = inputText.substring(strPos, myMatcher.start());
               String mentionId = myMatcher.group();
               // Strip off the { and }.
               mentionId = mentionId.substring(1, mentionId.length() - 1);
               strPos = myMatcher.end();
-              
+
               if (textSegment != null && textSegment.length() > 0) {
                   ConnectApi.TextSegmentInput textSegmentInput = makeTextSegmentInput(textSegment);
                   messageSegmentInputs.add(textSegmentInput);
               }
-              
+
               ConnectApi.MentionSegmentInput mentionSegmentInput = makeMentionSegmentInput(mentionId);
               messageSegmentInputs.add(mentionSegmentInput);
         }
@@ -136,11 +136,11 @@ global class ConnectApiHelper {
         textSegment.text = text;
         return textSegment;
     }
-    
+
     private static ConnectApi.MentionSegmentInput makeMentionSegmentInput(String mentionId) {
         ConnectApi.MentionSegmentInput mentionSegment = new ConnectApi.MentionSegmentInput();
         mentionSegment.id = mentionId;
         return mentionSegment;
     }
-    
+
 }

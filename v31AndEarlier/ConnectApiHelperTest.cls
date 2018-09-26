@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, salesforce.com, Inc.
+Copyright (c) 2018, salesforce.com, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -76,7 +76,7 @@ public class ConnectApiHelperTest {
     static void testNoMentions() {
         String text = 'hey there';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-        
+
         System.assertEquals(1, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.TextSegmentInput);
         ConnectApi.TextSegmentInput textSegment = (ConnectApi.TextSegmentInput) segments.get(0);
@@ -88,7 +88,7 @@ public class ConnectApiHelperTest {
         String mentionId = '005x0000000URNP';
         String text = '{' + mentionId + '}';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-        
+
         System.assertEquals(1, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.MentionSegmentInput);
         ConnectApi.MentionSegmentInput mentionSegment = (ConnectApi.MentionSegmentInput) segments.get(0);
@@ -144,7 +144,7 @@ public class ConnectApiHelperTest {
 
         ConnectApi.MentionSegmentInput mentionSegment = (ConnectApi.MentionSegmentInput) segments.get(0);
         System.assertEquals(mentionId, mentionSegment.id);
-        
+
         ConnectApi.MentionSegmentInput mentionSegment2 = (ConnectApi.MentionSegmentInput) segments.get(1);
         System.assertEquals(mentionId2, mentionSegment2.id);
     }
@@ -160,7 +160,7 @@ public class ConnectApiHelperTest {
         // 3 = text2
         // 4 = mention
         // 5 = text3
-        
+
         String hashtag = 'Yolo';
         String text1 = ': ';
         String link = 'http://salesforce.com';
@@ -168,9 +168,9 @@ public class ConnectApiHelperTest {
         String mentionId = UserInfo.getUserId();
         String text3 = ' test.';
         String text = '#' + hashtag + text1 + link + text2 + '{' + mentionId + '}' + text3;
-        
+
         ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithMentions(null, 'me', text);
-        
+
         List<ConnectApi.MessageSegment> segments = fi.body.messageSegments;
 
         System.assertEquals(6, segments.size());
@@ -195,7 +195,7 @@ public class ConnectApiHelperTest {
 
         ConnectApi.MentionSegment mentionSegment = (ConnectApi.MentionSegment) segments.get(4);
         System.assertEquals(mentionId, mentionSegment.record.id);
-        
+
         ConnectApi.TextSegment textSegment3 = (ConnectApi.TextSegment) segments.get(5);
         System.assertEquals(text3, textSegment3.text);
     }
