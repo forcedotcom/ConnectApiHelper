@@ -149,8 +149,8 @@ global class ConnectApiHelper {
         // The fourth group matches a 15 or 18 character content document ID preceded by "img:",
         //    optionally followed by a string (not containing '}'), and surrounded by {}:
         //    (\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})
-        // The fifth group matches a 12 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
-        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){12,18}(:[\\s\\S]*?)?\\})');
+        // The fifth group matches a 15 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
+        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){15,18}(:[\\s\\S]*?)?\\})');
 
         Matcher globalMatcher = globalPattern.matcher(inputText);
 
@@ -244,6 +244,8 @@ global class ConnectApiHelper {
         return mentionSegment;
     }
 
+    // Create entity link segment input using record ID
+    // In the chatter post, it will display the Name of the record, with a hyperlink to view the record 
     private static ConnectApi.EntityLinkSegmentInput makeEntityLinkSegmentInput(String recordId) {
         ConnectApi.EntityLinkSegmentInput entityLinkSegment = new ConnectApi.EntityLinkSegmentInput();
         entityLinkSegment.entityId = recordId;
