@@ -1,11 +1,11 @@
 global class PostToChatterAction {
     
-	@InvocableMethod(label='Post to Chatter')
-	global static List<ChatterPostResult> postToChatter(List<ChatterPost> chatterMessages) 
+    @InvocableMethod(label='Post to Chatter')
+    global static List<ChatterPostResult> postToChatter(List<ChatterPost> chatterMessages) 
     {      
         //Split Chatter Posts into their respective communities
         Map<String, List<ConnectApi.FeedItemInput>> communityToChatterPosts = new Map<String, List<ConnectApi.FeedItemInput>>();
-		for(ChatterPost msg : chatterMessages)
+        for(ChatterPost msg : chatterMessages)
         {								
             //Create a FeedItemInput from the Chatter Post message and Subject Id
             ConnectApi.FeedItemInput feedItem = 
@@ -35,24 +35,24 @@ global class PostToChatterAction {
             results.add(cpr);
         }
         return results;
-	}
+    }
     
     global class ChatterPost {
         @InvocableVariable(label='Community Id' description='Use either the ID of a community, "internal", or null.')
-    	global String communityId;
+        global String communityId;
         
-    	@InvocableVariable(required=true label='Subject Id' description='The parent of the post. Can be a user ID, a group ID, or a record ID.')
-    	global Id subjectId;
+        @InvocableVariable(required=true label='Subject Id' description='The parent of the post. Can be a user ID, a group ID, or a record ID.')
+        global Id subjectId;
 
-    	@InvocableVariable(required=true label='Message' description='Chatter Post message.')
-    	global String message;
-	}
+        @InvocableVariable(required=true label='Message' description='Chatter Post message.')
+        global String message;
+    }
 
     global class ChatterPostResult {
         @InvocableVariable(label='Is Success?' description='TRUE if chatter post has been posted successfully, otherwise FALSE.')
-    	global Boolean isSuccess;
+        global Boolean isSuccess;
 
         @InvocableVariable(label='Error Message' description='Reason why the posting failed.')
-    	global String errorMessage;
+        global String errorMessage;
     }
 }
