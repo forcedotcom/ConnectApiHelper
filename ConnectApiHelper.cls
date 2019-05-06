@@ -1,7 +1,6 @@
 /*
 Copyright (c) 2016, salesforce.com, Inc.
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
     * Redistributions of source code must retain the above copyright notice,
@@ -12,7 +11,6 @@ are permitted provided that the following conditions are met:
     * Neither the name of the salesforce.com, Inc. nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -55,7 +53,8 @@ global class ConnectApiHelper {
         'p' => ConnectApi.MarkupType.Paragraph, 
         's' => ConnectApi.MarkupType.Strikethrough, 
         'u' => ConnectApi.MarkupType.Underline, 
-        'ul' => ConnectApi.MarkupType.UnorderedList
+        'ul' => ConnectApi.MarkupType.UnorderedList,
+		'a' => ConnectApi.MarkupType.Hyperlink //Added for Hyperlink as per Spring 19 release
     };
     
     /**
@@ -149,7 +148,9 @@ global class ConnectApiHelper {
         // The fourth group matches a 15 or 18 character content document ID preceded by "img:", 
         //    optionally followed by a string (not containing '}'), and surrounded by {}: 
         //    (\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})
-        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})');
+        // The fifth group matches a 12 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
+        //Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){12,18}(:[\\s\\S]*?)?\\})');
+		Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){12,18}(:[\\s\\S]*?)?\\})|(<a url=+(.*?>))'); //Updated for Hyperlink as per Spring 19 release -> Added |(<a url=+(.*?>)) in pattern
         Matcher globalMatcher = globalPattern.matcher(inputText);
         
         while (globalMatcher.find()) {
@@ -170,6 +171,13 @@ global class ConnectApiHelper {
                     messageSegmentInputs.add(inlineImageSegmentInput);
                     strPos = globalMatcher.end();
                 }
+                else if (innerMatchedText.startsWith('record:')) {
+                    // Inline record
+                    String[] recordInfo = innerMatchedText.split(':', 6);
+                    ConnectApi.EntityLinkSegmentInput entityLinkSegmentInput = makeEntityLinkSegmentInput(recordInfo[1], null);
+                    messageSegmentInputs.add(entityLinkSegmentInput);
+                    strPos = globalMatcher.end();
+                }
                 else {
                     // This is a mention id.
                     ConnectApi.MentionSegmentInput mentionSegmentInput = makeMentionSegmentInput(innerMatchedText);
@@ -181,16 +189,31 @@ global class ConnectApiHelper {
                 // This is an HTML tag.
                 boolean isBeginTag = !matchingText.startsWith('</');
                 if (isBeginTag) {
-                    // Strip off the < and >.
-                    String tag = matchingText.substring(1, matchingText.indexOf('>'));
-                    if (supportedMarkup.containsKey(tag.toLowerCase())) {
-                        // Add a segment for any accumulated text (which includes unsupported HTML tags).
-                        addTextSegment(messageSegmentInputs, textSegment); 
-                        
-                        ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = makeMarkupBeginSegmentInput(tag);
-                        messageSegmentInputs.add(markupBeginSegmentInput);
-                        strPos = globalMatcher.end();
-                    }
+                    //Added for Hyperlink as per Spring 19 release - Start
+                    //Get url for Hyperlink tag
+					String anchorUrl = null;
+					String tag = null;
+					String hyperlinkTag = '<a url=';
+					if (matchingText.startsWith(hyperlinkTag.toLowerCase())) {
+						anchorUrl = matchingText.substring(matchingText.indexOf('url='), matchingText.indexOf('>')).remove('url=');
+						tag = matchingText.substring(1, matchingText.indexOf('url=')).trim();
+					}else{
+						// Strip off the < and >.
+						tag = matchingText.substring(1, matchingText.indexOf('>'));												
+					}
+					/*
+					// Strip off the < and >.
+					String tag = matchingText.substring(1, matchingText.indexOf('>'));
+					*/
+					//Added for Hyperlink as per Spring 19 release - End
+					if (supportedMarkup.containsKey(tag.toLowerCase())) {
+						// Add a segment for any accumulated text (which includes unsupported HTML tags).
+						addTextSegment(messageSegmentInputs, textSegment); 
+							
+						ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = makeMarkupBeginSegmentInput(tag,anchorUrl); //Added anchorUrl as new param for Hyperlink as per Spring 19 release
+						messageSegmentInputs.add(markupBeginSegmentInput);
+						strPos = globalMatcher.end();
+					}
                 }
                 else { // This is an end tag.
                     // Strip off the </ and >.
@@ -234,14 +257,26 @@ global class ConnectApiHelper {
         mentionSegment.id = mentionId;
         return mentionSegment;
     }
+
+    private static ConnectApi.EntityLinkSegmentInput makeEntityLinkSegmentInput(String recordId,String altText) {
+        ConnectApi.EntityLinkSegmentInput entityLinkSegment = new ConnectApi.EntityLinkSegmentInput();
+        entityLinkSegment.entityId = recordId;
+        return entityLinkSegment;
+    }   
     
+
     /**
      * Create a MarkupBeginSegmentInput corresponding to the tag.  Checking whether the tag is 
      * supported markup should happen before calling this method.
      */
-    private static ConnectApi.MarkupBeginSegmentInput makeMarkupBeginSegmentInput(String tag) {
-        ConnectApi.MarkupBeginSegmentInput markupBeginSegment = new ConnectApi.MarkupBeginSegmentInput();
+    private static ConnectApi.MarkupBeginSegmentInput makeMarkupBeginSegmentInput(String tag,String anchorUrl) { //Added anchorUrl as new param for Hyperlink as per Spring 19 release
+		ConnectApi.MarkupBeginSegmentInput markupBeginSegment = new ConnectApi.MarkupBeginSegmentInput();
         markupBeginSegment.markupType = supportedMarkup.get(tag.toLowerCase());
+		//Added for Hyperlink as per Spring 19 release - Start
+		if(anchorUrl != null){
+			markupBeginSegment.url = anchorUrl;
+		}
+		//Added for Hyperlink as per Spring 19 release - End
         return markupBeginSegment;
     }
     
@@ -301,6 +336,7 @@ global class ConnectApiHelper {
                 ConnectApi.MarkupBeginSegment markupBeginOutput = (ConnectApi.MarkupBeginSegment) segment;
                 ConnectApi.MarkupBeginSegmentInput markupBeginInput = new ConnectApi.MarkupBeginSegmentInput();
                 markupBeginInput.markupType = markupBeginOutput.markupType;
+				markupBeginInput.url = markupBeginOutput.url; //Added for Hyperlink as per Spring 19 release
                 input.messageSegments.add(markupBeginInput);
             }
             else if (segment instanceof ConnectApi.MarkupEndSegment) {
