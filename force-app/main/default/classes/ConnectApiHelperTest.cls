@@ -325,7 +325,7 @@ public class ConnectApiHelperTest {
 
         // Mock up an text segment containing a newline character.
         ConnectApi.TextSegment textSegment = new ConnectApi.TextSegment();
-        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
+        String newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
         textSegment.text = 'foo' + newline + 'bar';
 
         body.messageSegments.add(textSegment);
@@ -354,7 +354,7 @@ public class ConnectApiHelperTest {
 
         // Mock up an text segment containing a newline character.
         ConnectApi.TextSegment textSegment = new ConnectApi.TextSegment();
-        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
+        String newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
         textSegment.text = 'foo' + newline + newline + 'bar';
 
         body.messageSegments.add(textSegment);
