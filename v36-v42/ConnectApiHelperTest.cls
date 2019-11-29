@@ -1,7 +1,6 @@
 /*
 Copyright (c) 2018, salesforce.com, Inc.
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
     * Redistributions of source code must retain the above copyright notice,
@@ -12,7 +11,6 @@ are permitted provided that the following conditions are met:
     * Neither the name of the salesforce.com, Inc. nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -29,8 +27,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Unit tests for ConnectApiHelper.
  *
- * This class works with API version 36.0 and later. There are separate classes
- * that work with v35.0 and earlier.
+ * This class works with API version 36.0 to 42.0, inclusive. There are separate classes
+ * that work with a) v43.0 and later, and b) v35.0 and earlier.
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -497,19 +495,6 @@ public class ConnectApiHelperTest {
 
         ConnectApi.TextSegmentInput textSegment = (ConnectApi.TextSegmentInput) segments.get(3);
         System.assertEquals(badSyntax2, textSegment.text);
-    }
-
-    @IsTest(SeeAllData=true)
-    static void testRecordMention() {
-        String recordId = '01t3E000002GCm9QAG';
-        String text = '{record:' + recordId + '}';
-        List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-
-        System.assertEquals(1, segments.size());
-        System.assert(segments.get(0) instanceof ConnectApi.EntityLinkSegmentInput);
-
-        ConnectApi.EntityLinkSegmentInput recordSegment = (ConnectApi.EntityLinkSegmentInput) segments.get(0);
-        System.assertEquals(recordId, recordSegment.entityId);
     }
 
     @IsTest(SeeAllData=true)
