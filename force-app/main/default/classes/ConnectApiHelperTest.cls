@@ -29,8 +29,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * Unit tests for ConnectApiHelper.
  *
- * This class works with API version 36.0 and later. There are separate classes
- * that work with v35.0 and earlier.
+ * This class works with API version 43.0 and later. There are separate classes
+ * that work with v42.0 and earlier.
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -558,8 +558,21 @@ public class ConnectApiHelperTest {
     }
 
     @IsTest(SeeAllData=true)
-    static void testRecordMention() {
+    static void testRecordMention18CharId() {
         String recordId = '01t3E000002GCm9QAG';
+        String text = '{record:' + recordId + '}';
+        List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
+
+        System.assertEquals(1, segments.size());
+        System.assert(segments.get(0) instanceof ConnectApi.EntityLinkSegmentInput);
+
+        ConnectApi.EntityLinkSegmentInput recordSegment = (ConnectApi.EntityLinkSegmentInput) segments.get(0);
+        System.assertEquals(recordId, recordSegment.entityId);
+    }
+
+    @IsTest(SeeAllData=true)
+    static void testRecordMention15CharId() {
+        String recordId = '01t3E000002GCm9';
         String text = '{record:' + recordId + '}';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
 
