@@ -90,7 +90,12 @@ If you want to add rich text, inline images, or record links in your post, one l
 Installation
 ------------
 
-Just copy the `ConnectApiHelper` and `ConnectApiHelperTest` classes to your Salesforce org. For @-mentions, the methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. To include rich text and inline images as well (starting in version 35.0), the method to use is `ConnectApiHelper.postFeedItemWithRichText`.  You can also refer to the `ConnectApiHelperTest` class for more examples.
+Just copy the [ConnectApiHelper](force-app/main/default/classes/ConnectApiHelper.cls) and [ConnectApiHelperTest](force-app/main/default/classes/ConnectApiHelperTest.cls) classes to your Salesforce org. If you use [Salesforce DX](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm), you can clone this repo and develop using your preferred IDE, source control system, and scratch orgs. 
+
+Usage
+-----
+
+ For @-mentions, the methods to use are `ConnectApiHelper.postFeedItemWithMentions` and `ConnectApiHelper.postCommentWithMentions` and the parameters and formatting syntax are described in the method comments. To include rich text and inline images as well (starting in version 35.0), the method to use is `ConnectApiHelper.postFeedItemWithRichText`.  You can also refer to the `ConnectApiHelperTest` class for more examples.
 
 For creating input bodies from output bodies, the methods are `ConnectApiHelper.createFeedItemInputFromBody` and `ConnectApiHelper.createCommentInputFromBody`.
 
