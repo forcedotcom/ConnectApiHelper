@@ -102,7 +102,7 @@ For creating input bodies from output bodies, the methods are `ConnectApiHelper.
 Salesforce API Versions
 -----------------------
 
-If you need to use an earlier version of the Salesforce API, the current ConnectApiHelper class may not compile, because the methods being called may not be available in the earlier version. 
+If you need to use an earlier version of the Salesforce API, the current `ConnectApiHelper` class may not compile, because the methods being called may not be available in the earlier version. 
 
 We've provided variants of `ConnectApiHelper` so that you can use it with earlier Salesforce API versions:
 
