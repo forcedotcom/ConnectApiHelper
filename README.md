@@ -99,10 +99,17 @@ Usage
 
 For creating input bodies from output bodies, the methods are `ConnectApiHelper.createFeedItemInputFromBody` and `ConnectApiHelper.createCommentInputFromBody`.
 
-If you need to use API version 31.0 or earlier, be sure to use the ConnectApiHelper class that's contained in the `v31AndEarlier` directory.
+Salesforce API Versions
+-----------------------
 
-If you need to use API versions 32.0, 33.0, or 34.0, use the one that's in the `v32-v34` directory. These API versions do not support rich text segments.
+If you need to use an earlier version of the Salesforce API, the current `ConnectApiHelper` class may not compile, because the methods being called may not be available in the earlier version. 
 
-If you need to use API version 35.0, use the one that's in the `v35` directory.
+We've provided variants of `ConnectApiHelper` so that you can use it with earlier Salesforce API versions:
 
-If you need to use API versions 36.0 to 42.0 inclusive, use the one that's in the `v36-v42` directory. These API versions do not support record links.
+| API Version      | ConnectApiHelper location                 | Limitations                                |
+|------------------|-------------------------------------------|--------------------------------------------|
+| 43.0 and higher  | [default](force-app/main/default/classes) |                                            |
+| 36.0-42.0        | [v36-v42](v36-v42)                        | Record links not supported                 |
+| 35.0             | [v35](v35)                                | Same as above                              |
+| 32.0-34.0        | [v32-v34](v32-v34)                        | Same as above, and rich text not supported |
+| 31.0 and earlier | [v31AndEarlier](v31AndEarlier)            | Same as above                              |
