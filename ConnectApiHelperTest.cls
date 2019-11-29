@@ -316,7 +316,65 @@ public class ConnectApiHelperTest {
         System.assertEquals(0, input.messageSegments.size(), 'Wrong number of message segments.');
     }
 
+    @IsTest(SeeAllData=true)
+    static void testCreateInputFromBodyWithNewLine() {
+        // In order for newlines to display properly in rich text, they need to be turned into
+        // paragraph markup segments.
+        ConnectApi.FeedBody body = new ConnectApi.FeedBody();
+        body.messageSegments = new List<ConnectApi.MessageSegment>();
 
+        // Mock up an text segment containing a newline character.
+        ConnectApi.TextSegment textSegment = new ConnectApi.TextSegment();
+        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
+        textSegment.text = 'foo' + newline + 'bar';
+
+        body.messageSegments.add(textSegment);
+        body.text = textSegment.text;
+
+        ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(body);
+        // We expect 4 segments:
+        // 1. TextSegmentInput 'foo'
+        // 2. MarkupBeginSegmentInput for <p>
+        // 3. MarkupEndSegmentInput for <p>
+        // 4. TextSegmentInput 'bar'
+        System.assertEquals(4, input.messageSegments.size(), 'Wrong number of message segments.');
+        System.assert(input.messageSegments[0] instanceof ConnectApi.TextSegmentInput, 'Wrong type for input 0');
+        System.assert(input.messageSegments[1] instanceof ConnectApi.MarkupBeginSegmentInput, 'Wrong type for input 1');
+        System.assert(input.messageSegments[2] instanceof ConnectApi.MarkupEndSegmentInput, 'Wrong type for input 2');
+        System.assert(input.messageSegments[3] instanceof ConnectApi.TextSegmentInput, 'Wrong type for input 3');
+    }
+
+    @IsTest(SeeAllData=true)
+    static void testCreateInputFromBodyWithTwoNewLines() {
+        // In order for newlines to display properly in rich text, they need to be turned into
+        // paragraph markup segments.
+        
+        ConnectApi.FeedBody body = new ConnectApi.FeedBody();
+        body.messageSegments = new List<ConnectApi.MessageSegment>();
+
+        // Mock up an text segment containing a newline character.
+        ConnectApi.TextSegment textSegment = new ConnectApi.TextSegment();
+        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
+        textSegment.text = 'foo' + newline + newline + 'bar';
+
+        body.messageSegments.add(textSegment);
+        body.text = textSegment.text;
+
+        ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(body);
+        // We expect 5 segments:
+        // 1. TextSegmentInput 'foo'
+        // 2. MarkupBeginSegmentInput for <p>
+        // 3. TextSegmentInput '&nbsp;'
+        // 4. MarkupEndSegmentInput for <p>
+        // 5. TextSegmentInput 'bar'
+        System.assertEquals(5, input.messageSegments.size(), 'Wrong number of message segments.');
+        System.assert(input.messageSegments[0] instanceof ConnectApi.TextSegmentInput, 'Wrong type for input 0');
+        System.assert(input.messageSegments[1] instanceof ConnectApi.MarkupBeginSegmentInput, 'Wrong type for input 1');
+        System.assert(input.messageSegments[2] instanceof ConnectApi.TextSegmentInput, 'Wrong type for input 2');
+        System.assert(input.messageSegments[3] instanceof ConnectApi.MarkupEndSegmentInput, 'Wrong type for input 3');
+        System.assert(input.messageSegments[4] instanceof ConnectApi.TextSegmentInput, 'Wrong type for input 4');
+    }
+    
     @IsTest(SeeAllData=true)
     static void testUnsupportedMarkup() {
         // <span>a</span>, <h1><a>b</a> <br> <b>Does this work?</b></h1>
@@ -679,3 +737,4 @@ public class ConnectApiHelperTest {
         System.assertEquals(altText, inlineImageSegment.altText);
     }
 }
+
