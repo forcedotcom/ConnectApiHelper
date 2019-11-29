@@ -291,7 +291,7 @@ global class ConnectApiHelper {
         input.messageSegments = new List<ConnectApi.MessageSegmentInput>();
         
         // Identify newline and replace it with encoded values that MessageSegment will handle correctly.
-        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
+        String newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
 
         for (ConnectApi.MessageSegment segment : body.messageSegments) {
             if (segment instanceof ConnectApi.TextSegment) {
@@ -300,8 +300,8 @@ global class ConnectApiHelper {
                     // If newline is found, create multiple message segments instead of just a textSegment.
                     List<ConnectApi.MessageSegmentInput> newSegments = 
                         ConnectApiHelper.getMessageSegmentInputs(textOutput.text
-                                        .replaceAll(newline+newline,'<p>&nbsp;</p>')
-                                        .replaceAll(newline,'<p></p>'));
+                                        .replaceAll(newline + newline, '<p>&nbsp;</p>')
+                                        .replaceAll(newline, '<p></p>'));
                     input.messageSegments.addAll(newSegments);
                 }
                 else {
