@@ -289,13 +289,26 @@ global class ConnectApiHelper {
     public static ConnectApi.MessageBodyInput createInputFromBody(ConnectApi.FeedBody body) {
         ConnectApi.MessageBodyInput input = new ConnectApi.MessageBodyInput();
         input.messageSegments = new List<ConnectApi.MessageSegmentInput>();
+        
+        // Identify newline and replace it with encoded values that MessageSegment will handle correctly.
+        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
 
         for (ConnectApi.MessageSegment segment : body.messageSegments) {
             if (segment instanceof ConnectApi.TextSegment) {
                 ConnectApi.TextSegment textOutput = (ConnectApi.TextSegment) segment;
-                ConnectApi.TextSegmentInput textInput = new ConnectApi.TextSegmentInput();
-                textInput.text = textOutput.text;
-                input.messageSegments.add(textInput);
+                if (textOutput.text.indexOf(newline) > -1) {
+                    // If newline is found, create multiple message segments instead of just a textSegment.
+                    List<ConnectApi.MessageSegmentInput> newSegments = 
+                        ConnectApiHelper.getMessageSegmentInputs(textOutput.text
+                                        .replaceAll(newline+newline,'<p>&nbsp;</p>')
+                                        .replaceAll(newline,'<p></p>'));
+                    input.messageSegments.addAll(newSegments);
+                }
+                else {
+                    ConnectApi.TextSegmentInput textInput = new ConnectApi.TextSegmentInput();
+                    textInput.text = textOutput.text;
+                    input.messageSegments.add(textInput);
+                }
             }
             else if (segment instanceof ConnectApi.MentionSegment) {
                 ConnectApi.MentionSegment mentionOutput = (ConnectApi.MentionSegment) segment;
