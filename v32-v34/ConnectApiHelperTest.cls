@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014, salesforce.com, Inc.
+Copyright (c) 2018, salesforce.com, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -75,7 +75,7 @@ public class ConnectApiHelperTest {
     static void testNoMentions() {
         String text = 'hey there';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-        
+
         System.assertEquals(1, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.TextSegmentInput);
         ConnectApi.TextSegmentInput textSegment = (ConnectApi.TextSegmentInput) segments.get(0);
@@ -87,7 +87,7 @@ public class ConnectApiHelperTest {
         String mentionId = '005x0000000URNP';
         String text = '{' + mentionId + '}';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
-        
+
         System.assertEquals(1, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.MentionSegmentInput);
         ConnectApi.MentionSegmentInput mentionSegment = (ConnectApi.MentionSegmentInput) segments.get(0);
@@ -143,7 +143,7 @@ public class ConnectApiHelperTest {
 
         ConnectApi.MentionSegmentInput mentionSegment = (ConnectApi.MentionSegmentInput) segments.get(0);
         System.assertEquals(mentionId, mentionSegment.id);
-        
+
         ConnectApi.MentionSegmentInput mentionSegment2 = (ConnectApi.MentionSegmentInput) segments.get(1);
         System.assertEquals(mentionId2, mentionSegment2.id);
     }
@@ -159,7 +159,7 @@ public class ConnectApiHelperTest {
         // 3 = text2
         // 4 = mention
         // 5 = text3
-        
+
         String hashtag = 'Yolo';
         String text1 = ': ';
         String link = 'http://salesforce.com';
@@ -167,9 +167,9 @@ public class ConnectApiHelperTest {
         String mentionId = UserInfo.getUserId();
         String text3 = ' test.';
         String text = '#' + hashtag + text1 + link + text2 + '{' + mentionId + '}' + text3;
-        
+
         ConnectApi.FeedElement fi = ConnectApiHelper.postFeedItemWithMentions(null, 'me', text);
-        
+
         List<ConnectApi.MessageSegment> segments = fi.body.messageSegments;
 
         System.assertEquals(6, segments.size());
@@ -194,7 +194,7 @@ public class ConnectApiHelperTest {
 
         ConnectApi.MentionSegment mentionSegment = (ConnectApi.MentionSegment) segments.get(4);
         System.assertEquals(mentionId, mentionSegment.record.id);
-        
+
         ConnectApi.TextSegment textSegment3 = (ConnectApi.TextSegment) segments.get(5);
         System.assertEquals(text3, textSegment3.text);
     }
@@ -215,7 +215,7 @@ public class ConnectApiHelperTest {
 
     @IsTest(SeeAllData=true)
     static void testCreateInputFromBody() {
-    
+
         // We'll post a feed item that contains text, link, hashtag, and mention segments, and then call the helper method on the
         // resulting body.
 
@@ -243,7 +243,7 @@ public class ConnectApiHelperTest {
         feedItemInput.subjectId = UserInfo.getUserId();
 
         ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput, null);
-        
+
         ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(feedElement.body);
         System.assertEquals(5, input.messageSegments.size(), 'Wrong number of message segments.');
 
@@ -270,7 +270,7 @@ public class ConnectApiHelperTest {
         // Get coverage for the createFeedItemInputFromBody() method.
         ConnectApi.FeedItemInput feedItemInput2 = ConnectApiHelper.createFeedItemInputFromBody(feedElement.body);
         System.assertEquals(input, feedItemInput2.body, 'createFeedItemInputFromBody is returning a different input body than createInputFromBody.');
-        
+
         // Get coverage for the createCommentInputFromBody() method.
         ConnectApi.CommentInput commentInput = ConnectApiHelper.createCommentInputFromBody(feedElement.body);
         System.assertEquals(input, commentInput.body, 'createCommentInputFromBody is returning a different input body than createInputFromBody.');
@@ -281,13 +281,13 @@ public class ConnectApiHelperTest {
         ConnectApi.FeedBody body = new ConnectApi.FeedBody();
         body.messageSegments = new List<ConnectApi.MessageSegment>();
 
-        // Mock up an entity link segment.        
+        // Mock up an entity link segment.
         ConnectApi.EntityLinkSegment entityLinkSegment = new ConnectApi.EntityLinkSegment();
         entityLinkSegment.text = 'blah';
-        
+
         body.messageSegments.add(entityLinkSegment);
         body.text = 'blah';
-        
+
         ConnectApi.MessageBodyInput input = ConnectApiHelper.createInputFromBody(body);
         System.assertEquals(0, input.messageSegments.size(), 'Wrong number of message segments.');
     }

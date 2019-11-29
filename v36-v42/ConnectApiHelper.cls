@@ -1,7 +1,6 @@
 /*
 Copyright (c) 2018, salesforce.com, Inc.
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
     * Redistributions of source code must retain the above copyright notice,
@@ -12,7 +11,6 @@ are permitted provided that the following conditions are met:
     * Neither the name of the salesforce.com, Inc. nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -36,8 +34,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  *       This is useful for when you retrieve a feed item or comment and want to either
  *       re-post or edit it.
  *
- * This class works with API version 43.0 and later. There are separate classes
- * that work with v42.0 and earlier.
+ * This class works with API version 36.0 to 42.0, inclusive. There are separate classes
+ * that work with a) v43.0 and later, and b) v35.0 and earlier.
  *
  * See https://github.com/forcedotcom/ConnectApiHelper for more information.
  *
@@ -149,9 +147,7 @@ global class ConnectApiHelper {
         // The fourth group matches a 15 or 18 character content document ID preceded by "img:",
         //    optionally followed by a string (not containing '}'), and surrounded by {}:
         //    (\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})
-        // The fifth group matches a 15 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
-        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){15,18}(:[\\s\\S]*?)?\\})');
-
+        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})');
         Matcher globalMatcher = globalPattern.matcher(inputText);
 
         while (globalMatcher.find()) {
@@ -170,13 +166,6 @@ global class ConnectApiHelper {
                     String altText = imageInfo.size() == 3 ? imageInfo[2] : null;
                     ConnectApi.InlineImageSegmentInput inlineImageSegmentInput = makeInlineImageSegmentInput(imageInfo[1], altText);
                     messageSegmentInputs.add(inlineImageSegmentInput);
-                    strPos = globalMatcher.end();
-                }
-                else if (innerMatchedText.startsWith('record:')) {
-                    // Inline record
-                    String[] recordInfo = innerMatchedText.split(':');
-                    ConnectApi.EntityLinkSegmentInput entityLinkSegmentInput = makeEntityLinkSegmentInput(recordInfo[1]);
-                    messageSegmentInputs.add(entityLinkSegmentInput);
                     strPos = globalMatcher.end();
                 }
                 else {
@@ -244,15 +233,6 @@ global class ConnectApiHelper {
         return mentionSegment;
     }
 
-    // Create entity link segment input using record ID
-    // In the chatter post, it will display the Name of the record, with a hyperlink to view the record 
-    private static ConnectApi.EntityLinkSegmentInput makeEntityLinkSegmentInput(String recordId) {
-        ConnectApi.EntityLinkSegmentInput entityLinkSegment = new ConnectApi.EntityLinkSegmentInput();
-        entityLinkSegment.entityId = recordId;
-        return entityLinkSegment;
-    }
-
-
     /**
      * Create a MarkupBeginSegmentInput corresponding to the tag.  Checking whether the tag is
      * supported markup should happen before calling this method.
@@ -289,26 +269,13 @@ global class ConnectApiHelper {
     public static ConnectApi.MessageBodyInput createInputFromBody(ConnectApi.FeedBody body) {
         ConnectApi.MessageBodyInput input = new ConnectApi.MessageBodyInput();
         input.messageSegments = new List<ConnectApi.MessageSegmentInput>();
-        
-        // Identify newline and replace it with encoded values that MessageSegment will handle correctly.
-        string newline = EncodingUtil.urlDecode('%0A', 'UTF-8'); 
 
         for (ConnectApi.MessageSegment segment : body.messageSegments) {
             if (segment instanceof ConnectApi.TextSegment) {
                 ConnectApi.TextSegment textOutput = (ConnectApi.TextSegment) segment;
-                if (textOutput.text.indexOf(newline) > -1) {
-                    // If newline is found, create multiple message segments instead of just a textSegment.
-                    List<ConnectApi.MessageSegmentInput> newSegments = 
-                        ConnectApiHelper.getMessageSegmentInputs(textOutput.text
-                                        .replaceAll(newline+newline,'<p>&nbsp;</p>')
-                                        .replaceAll(newline,'<p></p>'));
-                    input.messageSegments.addAll(newSegments);
-                }
-                else {
-                    ConnectApi.TextSegmentInput textInput = new ConnectApi.TextSegmentInput();
-                    textInput.text = textOutput.text;
-                    input.messageSegments.add(textInput);
-                }
+                ConnectApi.TextSegmentInput textInput = new ConnectApi.TextSegmentInput();
+                textInput.text = textOutput.text;
+                input.messageSegments.add(textInput);
             }
             else if (segment instanceof ConnectApi.MentionSegment) {
                 ConnectApi.MentionSegment mentionOutput = (ConnectApi.MentionSegment) segment;
