@@ -40,7 +40,7 @@ Streamlined rich text, inline images and record links
 -----------------------------------------------------
 If you want to add rich text, inline images, or record links in your post, one line will do it:
 
-    ConnectApi.FeedItem fi = ConnectApiHelper.postFeedItemWithRichText(Network.getNetworkId(),
+    ConnectApi.FeedItem fi = (ConnectApi.FeedItem) ConnectApiHelper.postFeedItemWithRichText(Network.getNetworkId(),
     'me', 'Have you seen this <b>gorgeous</b> view? {img:069x00000000D7m:View of the Space Needle from our office.} \nBy the way, please check {record:01t3E000002GCm9QAG}');
 
 ... instead of this:
