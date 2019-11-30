@@ -49,6 +49,7 @@ global class ConnectApiHelper {
 
     private static final Map<String, ConnectApi.MarkupType> supportedMarkup = new Map<String, ConnectApi.MarkupType> {
         'b' => ConnectApi.MarkupType.Bold,
+        'code' => ConnectApi.MarkupType.Code,
         'i' => ConnectApi.MarkupType.Italic,
         'li' => ConnectApi.MarkupType.ListItem,
         'ol' => ConnectApi.MarkupType.OrderedList,

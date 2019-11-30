@@ -628,6 +628,7 @@ public class ConnectApiHelperTest {
         // <ul><li><s>A completed item in an unordered list.</s></li></ul>
         // <ol><li><u>An underlined item in an ordered list.</u></li></ol>
         // <b>And, of course, an image for you:</b> {img:069B0000000q7hi:An image of something nice.}
+        // <code>int foo = 1 / 0;</code>
         String text1 = 'This is an italicized paragraph.';
         String text2 = 'A completed item in an unordered list.';
         String text3 = 'An underlined item in an ordered list.';
@@ -635,11 +636,13 @@ public class ConnectApiHelperTest {
         String text5 = ' ';
         String imageId = '069B0000000q7hi';
         String altText = 'An image of something nice.';
+        String code = 'int foo = 1 / 0;';
         String text = '<p><i>' + text1 + '</i></p><ul><li><s>' + text2 + '</s></li></ul><ol><li><u>'
-                        + text3 + '</u></li></ol><b>' + text4 + '</b> {img:' + imageId + ':' + altText + '}';
+                        + text3 + '</u></li></ol><b>' + text4 + '</b> {img:' + imageId + ':' + altText + '}'
+                        + '<code>' + code + '</code>';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
 
-        System.assertEquals(24, segments.size());
+        System.assertEquals(27, segments.size());
         // <p><i>This is an italicized paragraph.</i></p>
         System.assert(segments.get(0) instanceof ConnectApi.MarkupBeginSegmentInput);
         System.assert(segments.get(1) instanceof ConnectApi.MarkupBeginSegmentInput);
@@ -671,6 +674,11 @@ public class ConnectApiHelperTest {
         System.assert(segments.get(21) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(22) instanceof ConnectApi.TextSegmentInput);
         System.assert(segments.get(23) instanceof ConnectApi.InlineImageSegmentInput);
+
+        // <code>int foo = 1 / 0;</code>
+        System.assert(segments.get(24) instanceof ConnectApi.MarkupBeginSegmentInput);
+        System.assert(segments.get(25) instanceof ConnectApi.TextSegmentInput);
+        System.assert(segments.get(26) instanceof ConnectApi.MarkupEndSegmentInput);
 
         // <p><i>This is an italicized paragraph.</i></p>
         ConnectApi.MarkupBeginSegmentInput markupBeginSegment = (ConnectApi.MarkupBeginSegmentInput) segments.get(0);
@@ -748,6 +756,17 @@ public class ConnectApiHelperTest {
         ConnectApi.InlineImageSegmentInput inlineImageSegment = (ConnectApi.InlineImageSegmentInput) segments.get(23);
         System.assertEquals(imageId, inlineImageSegment.fileId);
         System.assertEquals(altText, inlineImageSegment.altText);
+
+        // <code>int foo = 1 / 0;</code>
+        markupBeginSegment = (ConnectApi.MarkupBeginSegmentInput) segments.get(24);
+        System.assertEquals(ConnectApi.MarkupType.Code, markupBeginSegment.markupType);
+
+        textSegment = (ConnectApi.TextSegmentInput) segments.get(25);
+        System.assertEquals(code, textSegment.text);
+
+        markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(26);
+        System.assertEquals(ConnectApi.MarkupType.Code, markupEndSegment.markupType);
+
     }
 }
 
