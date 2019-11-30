@@ -84,7 +84,7 @@ global class ConnectApiHelper {
      *                         user or group by using the syntax {ID}, for example:
      *                         'Hello {005x0000000URNP}, have you seen the group {0F9x00000000D7m}?'
      *                         You can include rich text by using supported HTML tags:
-     *                         <b>, <i>, <u>, <s>, <ul>, <ol>, <li>, <p>.
+     *                         <b>, <i>, <u>, <s>, <ul>, <ol>, <li>, <p>, <code>.
      *                         You can include an inline image by using the syntax {img:ID} or
      *                         {img:ID:alt text}, for example: 'Have you seen this gorgeous view?
      *                         {img:069x00000000D7m:View of the Space Needle from our office.}?'
