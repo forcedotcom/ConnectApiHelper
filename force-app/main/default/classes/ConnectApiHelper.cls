@@ -71,8 +71,21 @@ global class ConnectApiHelper {
      * @return The posted feed item.
      */
     public static ConnectApi.FeedElement postFeedItemWithMentions(String communityId, String subjectId, String textWithMentions) {
+        return postFeedItemWithSpecialFormatting(communityId, createFeedItemWithMentions(subjectId, textWithMentions));
+    }
 
-        return postFeedItemWithSpecialFormatting(communityId, subjectId, textWithMentions, 'textWithMentions');
+    /**
+     * create a feed item with @-mentions using an @-mention formatting syntax.
+     *
+     * @param subjectId The parent of the post. Can be a user ID, a group ID, or a record ID.
+     * @param textWithMentions The text of the post. You can @-mention a user or group by using
+     *                         the syntax {ID}, for example: 'Hello {005x0000000URNP}, have you
+     *                         seen the group {0F9x00000000D7m}?' Links and hashtags will be
+     *                         automatically parsed if provided.
+     * @return The feed item input that can be posted.
+     */
+    public static ConnectApi.FeedItemInput createFeedItemWithMentions(String subjectId, String textWithMentions) {
+        return createFeedItemWithSpecialFormatting(subjectId, textWithMentions, 'textWithMentions');
     }
 
     /**
@@ -92,10 +105,32 @@ global class ConnectApiHelper {
      * @return The posted feed item.
      */
     public static ConnectApi.FeedElement postFeedItemWithRichText(String communityId, String subjectId, String textWithMentionsAndRichText) {
-        return postFeedItemWithSpecialFormatting(communityId, subjectId, textWithMentionsAndRichText, 'textWithMentionsAndRichText');
+        return postFeedItemWithSpecialFormatting(communityId, createFeedItemWithRichText(subjectId, textWithMentionsAndRichText));
     }
 
-    private static ConnectApi.FeedElement postFeedItemWithSpecialFormatting(String communityId, String subjectId, String formattedText, String textParameterName) {
+    /**
+     * create a feed item with rich text using HTML tags and inline image formatting syntax.
+     *
+     * @param subjectId The parent of the post. Can be a user ID, a group ID, or a record ID.
+     * @param textWithMentionsAndRichText The text of the post. You can @-mention a
+     *                         user or group by using the syntax {ID}, for example:
+     *                         'Hello {005x0000000URNP}, have you seen the group {0F9x00000000D7m}?'
+     *                         You can include rich text by using supported HTML tags:
+     *                         <b>, <i>, <u>, <s>, <ul>, <ol>, <li>, <p>, <code>.
+     *                         You can include an inline image by using the syntax {img:ID} or
+     *                         {img:ID:alt text}, for example: 'Have you seen this gorgeous view?
+     *                         {img:069x00000000D7m:View of the Space Needle from our office.}?'
+     *                         Links and hashtags will be automatically parsed if provided.
+     * @return The feed item input that can be posted.
+     */
+    public static ConnectApi.FeedItemInput createFeedItemWithRichText(String subjectId, String textWithMentionsAndRichText) {
+        return createFeedItemWithSpecialFormatting(subjectId, textWithMentionsAndRichText, 'textWithMentionsAndRichText');
+    }
+
+    private static ConnectApi.FeedElement postFeedItemWithSpecialFormatting(String communityId, ConnectApi.FeedItemInput input) {
+        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input);
+    }
+    private static ConnectApi.FeedItemInput createFeedItemWithSpecialFormatting(String subjectId, String formattedText, String textParameterName) {
         if (formattedText == null || formattedText.trim().length() == 0) {
             throw new InvalidParameterException('The ' + textParameterName + ' parameter must be non-empty.');
         }
@@ -107,7 +142,7 @@ global class ConnectApiHelper {
         input.body = messageInput;
         input.subjectId = subjectId;
 
-        return ConnectApi.ChatterFeeds.postFeedElement(communityId, input);
+        return input;
     }
 
     /**
