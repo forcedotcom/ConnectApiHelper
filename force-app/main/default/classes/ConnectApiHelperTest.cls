@@ -454,7 +454,7 @@ public class ConnectApiHelperTest {
         String text1 = 'foo';
         String text2 = 'bar';
         String text3 = 'baz';
-        String text = '<U>' + text1 + '</U><b>' + text2 + '</B><oL><li>' + text3 + '</li></oL> + <A hrEf="https://www.salesforce.com">' + text3 + '</A>';
+        String text = '<U>' + text1 + '</U><b>' + text2 + '</B><oL><li>' + text3 + '</li></oL>' + '<A hrEf="https://www.salesforce.com">' + text3 + '</A>';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
 
         System.assertEquals(14, segments.size());
