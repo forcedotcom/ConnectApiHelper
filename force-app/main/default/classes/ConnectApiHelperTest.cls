@@ -148,6 +148,20 @@ public class ConnectApiHelperTest {
     }
 
     @IsTest(SeeAllData=true)
+    static void testHyperlinkPost() {
+        String mentionId  = '005x0000000URNPzzz';
+        String mentionId2 = '0F9x00000000D7m';
+        String text = '<a href="https://google.com">Testing Hyperlink</a>';
+        List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
+
+        System.assertEquals(3, segments.size());
+        System.assert(segments.get(0) instanceof ConnectApi.MarkupBeginSegmentInput);
+        System.assert(segments.get(1) instanceof ConnectApi.TextSegmentInput);
+        System.assert(segments.get(2) instanceof ConnectApi.MarkupEndSegmentInput);
+
+    }
+
+    @IsTest(SeeAllData=true)
     static void testLinkAndHashtagParsing() {
         // The test string is: #Yolo: http://salesforce.com, {005} {005x0000000URNPzzz} test.
         //                     [   ][][                   ][      ][                  ][    ]
@@ -384,7 +398,7 @@ public class ConnectApiHelperTest {
         // 2 = text2
         // 3 = markup end
         // 4 = text3
-        String text1 = '<span>a</span>, <h1><a>b</a> <br> ';
+        String text1 = '<span>a</span>, <h1><tr>b</tr> <br> ';
         String text2 = 'Does this work?';
         String text3 = '</h1>';
         String text = text1 + '<b>' + text2 + '</b>' + text3;
@@ -440,10 +454,10 @@ public class ConnectApiHelperTest {
         String text1 = 'foo';
         String text2 = 'bar';
         String text3 = 'baz';
-        String text = '<U>' + text1 + '</U><b>' + text2 + '</B><oL><li>' + text3 + '</li></oL>';
+        String text = '<U>' + text1 + '</U><b>' + text2 + '</B><oL><li>' + text3 + '</li></oL> + <A hrEf="https://www.salesforce.com">' + text3 + '</A>';
         List<ConnectApi.MessageSegmentInput> segments = ConnectApiHelper.getMessageSegmentInputs(text);
 
-        System.assertEquals(11, segments.size());
+        System.assertEquals(14, segments.size());
         System.assert(segments.get(0) instanceof ConnectApi.MarkupBeginSegmentInput);
         System.assert(segments.get(1) instanceof ConnectApi.TextSegmentInput);
         System.assert(segments.get(2) instanceof ConnectApi.MarkupEndSegmentInput);
@@ -455,6 +469,9 @@ public class ConnectApiHelperTest {
         System.assert(segments.get(8) instanceof ConnectApi.TextSegmentInput);
         System.assert(segments.get(9) instanceof ConnectApi.MarkupEndSegmentInput);
         System.assert(segments.get(10) instanceof ConnectApi.MarkupEndSegmentInput);
+        System.assert(segments.get(11) instanceof ConnectApi.MarkupBeginSegmentInput);
+        System.assert(segments.get(12) instanceof ConnectApi.TextSegmentInput);
+        System.assert(segments.get(13) instanceof ConnectApi.MarkupEndSegmentInput);
 
         ConnectApi.MarkupBeginSegmentInput markupBeginSegment = (ConnectApi.MarkupBeginSegmentInput) segments.get(0);
         System.assertEquals(ConnectApi.MarkupType.Underline, markupBeginSegment.markupType);
@@ -488,6 +505,15 @@ public class ConnectApiHelperTest {
 
         markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(10);
         System.assertEquals(ConnectApi.MarkupType.OrderedList, markupEndSegment.markupType);
+
+        markupBeginSegment = (ConnectApi.MarkupBeginSegmentInput) segments.get(11);
+        System.assertEquals(ConnectApi.MarkupType.Hyperlink, markupBeginSegment.markupType);
+
+        textSegment = (ConnectApi.TextSegmentInput) segments.get(12);
+        System.assertEquals(text3, textSegment.text);
+
+        markupEndSegment = (ConnectApi.MarkupEndSegmentInput) segments.get(13);
+        System.assertEquals(ConnectApi.MarkupType.Hyperlink, markupEndSegment.markupType);
     }
 
     @IsTest(SeeAllData=true)
