@@ -207,7 +207,7 @@ global class ConnectApiHelper {
                         // Add a segment for any accumulated text (which includes unsupported HTML tags).
                         addTextSegment(messageSegmentInputs, textSegment);
                         //hyperlink tag - get the URL. Assumes format of <a href="url">altText</a>
-                        String url = matchingText.substring(matchingText.indexOf('"') + 1, matchingText.lastIndexOf('>') - 1);
+                        String url = matchingText.substring(matchingText.indexOf('"') + 1, matchingText.indexOf('>') - 1);
                         String htmlTag = matchingText.substring(1, matchingText.indexOf('"'));
                         String altText = matchingText.substring(matchingText.indexOf('>') + 1, matchingText.indexOf('</'));
                         ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = makeMarkupBeginSegmentInput(htmlTag, url, altText);
