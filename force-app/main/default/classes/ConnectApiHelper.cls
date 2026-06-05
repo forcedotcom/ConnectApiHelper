@@ -56,7 +56,8 @@ global class ConnectApiHelper {
         'p' => ConnectApi.MarkupType.Paragraph,
         's' => ConnectApi.MarkupType.Strikethrough,
         'u' => ConnectApi.MarkupType.Underline,
-        'ul' => ConnectApi.MarkupType.UnorderedList
+        'ul' => ConnectApi.MarkupType.UnorderedList,
+        'a href=' => ConnectApi.MarkupType.Hyperlink
     };
 
     /**
@@ -144,14 +145,16 @@ global class ConnectApiHelper {
         List<ConnectApi.MessageSegmentInput> messageSegmentInputs = new List<ConnectApi.MessageSegmentInput>();
         Integer strPos = 0;
         // The pattern for matching mentions, markup begin/end tags, and inline images.
-        // The first group matches a 15 or 18 character ID surrounded by {}:
+        // The first and second group matches a 15 or 18 character ID surrounded by {}:
         //   (\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})
-        // The second/third groups match beginning/ending HTML tags: (<[a-zA-Z]*>)|(</[a-zA-Z]*>)
-        // The fourth group matches a 15 or 18 character content document ID preceded by "img:",
+        // The thrid group match hyperlink tags with the url and alt text and end tag <a href="https://test.com"></a>
+        //   ((<a )(.*?)(">)|(</a>))
+        // The fourth/fifth groups match the other beginning/ending HTML tags and text: (<[a-zA-Z]*>)|(</[a-zA-Z]*>)
+        // The sixth group matches a 15 or 18 character content document ID preceded by "img:",
         //    optionally followed by a string (not containing '}'), and surrounded by {}:
         //    (\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})
-        // The fifth group matches a 15 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
-        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){15,18}(:[\\s\\S]*?)?\\})');
+        // The seventh group matches a 15 or 18 character record ID preceded by "record:" ex:{record:01t3E000002GCm9QAG}
+        Pattern globalPattern = Pattern.compile('(\\{[a-zA-Z0-9]{15}\\}|\\{[a-zA-Z0-9]{18}\\})|(<[aA]\\s+[hH][rR][eE][fF]=")(.*?)">(.*?)</[aA]>|(<[a-zA-Z]*>)|(</[a-zA-Z]*>)|(\\{img:(069[a-zA-Z0-9]{12,15})(:[\\s\\S]*?)?\\})|(\\{record:([a-zA-Z0-9]){15,18}(:[\\s\\S]*?)?\\})');
 
         Matcher globalMatcher = globalPattern.matcher(inputText);
 
@@ -197,12 +200,24 @@ global class ConnectApiHelper {
                         // Add a segment for any accumulated text (which includes unsupported HTML tags).
                         addTextSegment(messageSegmentInputs, textSegment);
 
-                        ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = makeMarkupBeginSegmentInput(tag);
+                        ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = makeMarkupBeginSegmentInput(tag, null, null);
                         messageSegmentInputs.add(markupBeginSegmentInput);
                         strPos = globalMatcher.end();
+                    } else if (tag.toLowerCase().contains('href=')){
+                        // Add a segment for any accumulated text (which includes unsupported HTML tags).
+                        addTextSegment(messageSegmentInputs, textSegment);
+                        //hyperlink tag - get the URL. Assumes format of <a href="url">altText</a>
+                        String url = matchingText.substring(matchingText.indexOf('"') + 1, matchingText.indexOf('>') - 1);
+                        String htmlTag = matchingText.substring(1, matchingText.indexOf('"'));
+                        String altText = matchingText.substring(matchingText.indexOf('>') + 1, matchingText.indexOf('</'));
+                        ConnectApi.MarkupBeginSegmentInput markupBeginSegmentInput = makeMarkupBeginSegmentInput(htmlTag, url, altText);
+                        ConnectApi.MarkupEndSegmentInput markupEndSegmentInput = makeMarkupEndSegmentInput(htmlTag);
+                        messageSegmentInputs.add(markupBeginSegmentInput);
+                        addTextSegment(messageSegmentInputs, altText);
+                        messageSegmentInputs.add(markupEndSegmentInput);
+                        strPos = globalMatcher.end();
                     }
-                }
-                else { // This is an end tag.
+                } else { // This is an end tag.
                     // Strip off the </ and >.
                     String tag = matchingText.substring(2, matchingText.indexOf('>'));
                     if (supportedMarkup.containsKey(tag.toLowerCase())) {
@@ -258,9 +273,13 @@ global class ConnectApiHelper {
      * Create a MarkupBeginSegmentInput corresponding to the tag.  Checking whether the tag is
      * supported markup should happen before calling this method.
      */
-    private static ConnectApi.MarkupBeginSegmentInput makeMarkupBeginSegmentInput(String tag) {
+    private static ConnectApi.MarkupBeginSegmentInput makeMarkupBeginSegmentInput(String tag, String url, String altText) {
         ConnectApi.MarkupBeginSegmentInput markupBeginSegment = new ConnectApi.MarkupBeginSegmentInput();
         markupBeginSegment.markupType = supportedMarkup.get(tag.toLowerCase());
+        if(!String.isEmpty(url)){
+            markupBeginSegment.url = url;
+            markupBeginSegment.altText = altText;
+        }
         return markupBeginSegment;
     }
 
